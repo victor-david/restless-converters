@@ -4,6 +4,7 @@ using System.Drawing;
 using System.IO;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Controls.Primitives;
 using System.Windows.Media.Imaging;
 
 namespace Restless.Converters
@@ -59,10 +60,12 @@ namespace Restless.Converters
         /// <summary>
         /// Gets the <see cref="HtmlToXamlConverter"/> used to convert incoming html
         /// </summary>
-        public HtmlToXamlConverter Converter
-        {
-            get;
-        }
+        public HtmlToXamlConverter Converter { get; }
+
+        /// <summary>
+        /// Gets the html paste action
+        /// </summary>
+        public HtmlPasteAction PasteAction { get; }
         #endregion
 
         /************************************************************************/
@@ -72,18 +75,43 @@ namespace Restless.Converters
         /// Creates a new instance of <see cref="PasteHandler"/>
         /// </summary>
         /// <param name="element">The element to handle.</param>
-        /// <returns></returns>
-        public static PasteHandler Create(DependencyObject element)
+        /// <returns>A new instance of <see cref="PasteHandler"/></returns>
+        public static PasteHandler Create(TextBoxBase element)
         {
-            return new PasteHandler(element);
+            return new PasteHandler(element, HtmlPasteAction.Auto);
         }
 
-        private PasteHandler(DependencyObject element)
+        /// <summary>
+        /// Creates a new instance of <see cref="PasteHandler"/>
+        /// </summary>
+        /// <param name="element">The element to handle.</param>
+        /// <param name="pasteAction">The action to take upon html paste</param>
+        /// <returns>A new instance of <see cref="PasteHandler"/></returns>
+        public static PasteHandler Create(TextBoxBase element, HtmlPasteAction pasteAction)
+        {
+            return new PasteHandler(element, pasteAction);
+        }
+
+        private PasteHandler(TextBoxBase element, HtmlPasteAction pasteAction)
         {
             ArgumentNullException.ThrowIfNull(element, nameof(element));
             DataObject.AddPastingHandler(element, OnPaste);
             MaxImageDimension = DefaultMaxImagePasteSize;
             Converter = HtmlToXamlConverter.Create();
+            PasteAction = pasteAction;
+            if (PasteAction == HtmlPasteAction.Auto)
+            {
+                if (element is TextBox)
+                {
+                    PasteAction = HtmlPasteAction.None;
+                }
+
+                if (element is RichTextBox)
+                {
+                    PasteAction = HtmlPasteAction.ConvertToXaml;
+                }
+            }
+
         }
         #endregion
 
@@ -123,22 +151,26 @@ namespace Restless.Converters
 
         private void TryHandleHtmlData(object sender, DataObject dataObject, DataObjectPastingEventArgs e)
         {
-            if (!e.Handled && dataObject.GetHtml() is string html)
+            if (!e.Handled && dataObject.GetHtml() is string html && PasteAction != HtmlPasteAction.None)
             {
                 HtmlPasteItem item = new(html);
                 if (item.HasFragment)
                 {
                     DataObject obj = new();
 
-                    if (sender is RichTextBox)
+                    switch (PasteAction)
                     {
-                        string xaml = Converter.SetHtml(item.Fragment).Convert();
-                        obj.SetData(DataFormats.Xaml, xaml);
-                    }
-
-                    if (sender is TextBox)
-                    {
-                        obj.SetText(item.Fragment);
+                        case HtmlPasteAction.ConvertToText:
+                            obj.SetText(item.Fragment);
+                            break;
+                        case HtmlPasteAction.ConvertToXaml:
+                        case HtmlPasteAction.ConvertToXamlText:
+                            string xaml = Converter.SetHtml(item.Fragment).Convert();
+                            string format = PasteAction == HtmlPasteAction.ConvertToXaml ? DataFormats.Xaml : DataFormats.Text;
+                            obj.SetData(format, xaml);
+                            break;
+                        default:
+                            throw new InvalidOperationException("Invalid paste action");
                     }
 
                     e.DataObject = obj;
@@ -207,9 +239,11 @@ namespace Restless.Converters
         #endregion
     }
 
+    #region Helper class
     internal static class Helper
     {
         internal static bool ContainsHtml(this DataObject data) => data.GetDataPresent(DataFormats.Html);
         internal static string GetHtml(this DataObject data) => data.ContainsHtml() ? data.GetData(DataFormats.Html) as string : null;
     }
+    #endregion
 }

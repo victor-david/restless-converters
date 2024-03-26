@@ -18,9 +18,8 @@ namespace Restless.Converters.Demo
         public MainWindow()
         {
             InitializeComponent();
-            //PasteHandler.Initialize(Rich);
-            PasteHandler.Initialize(TextBoxHtml);
-            Rich.IsDocumentEnabled = true;
+            PasteHandler.Create(Rich);
+            PasteHandler.Create(TextBoxHtml);
             AddHandler(Hyperlink.RequestNavigateEvent, new RoutedEventHandler(OnNavigationRequest));
         }
 

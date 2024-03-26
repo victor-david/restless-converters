@@ -24,7 +24,10 @@
         </Grid.ColumnDefinitions>
 
         <TextBlock Text="Rich Text Box"/>
-        <RichTextBox x:Name="Rich" Grid.Column="0" Grid.Row="1" Grid.RowSpan="3" AllowDrop="False"/>
+        <RichTextBox
+            x:Name="Rich"
+            Grid.Column="0" Grid.Row="1" Grid.RowSpan="3"
+            IsDocumentEnabled="True"/>
 
         <TextBlock Grid.Column="2" Text="Html Box"/>
         <TextBox x:Name="TextBoxHtml" Grid.Column="2" Grid.Row="1"/>

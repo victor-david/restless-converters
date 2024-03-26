@@ -3,15 +3,15 @@ using System.Diagnostics;
 using System.Drawing;
 using System.IO;
 using System.Windows;
+using System.Windows.Controls;
 using System.Windows.Media.Imaging;
 
-namespace Restless.Converters.Demo
+namespace Restless.Converters
 {
-    internal static class PasteHandler
+    public class PasteHandler
     {
         #region Private
-        private static double MaxImageDimension = DefaultMaxImagePasteSize;
-
+        private double maxImageDimenison;
         private static class OtherFormats
         {
             public const string SysDrawingBitmap = "System.Drawing.Bitmap";
@@ -22,40 +22,84 @@ namespace Restless.Converters.Demo
 
         /************************************************************************/
 
-        #region Constants
-        internal const double MinMaxImagePasteSize = 100;
-        internal const double MaxMaxImagePasteSize = 800;
-        internal const double DefaultMaxImagePasteSize = 500;
+        #region Constants (public)
+        /// <summary>
+        /// Gets the minimum value that may be assigned to <see cref="MaxImageDimension"/>.
+        /// </summary>
+        public const double MinMaxImagePasteSize = 100;
+
+        /// <summary>
+        /// Gets the maximum value that may be assigned to <see cref="MaxImageDimension"/>.
+        /// </summary>
+        public const double MaxMaxImagePasteSize = 800;
+
+        /// <summary>
+        /// Gets the default value for <see cref="MaxImageDimension"/>.
+        /// </summary>
+        public const double DefaultMaxImagePasteSize = 500;
         #endregion
 
         /************************************************************************/
 
-        #region Internal methods
-        internal static void Initialize(DependencyObject element)
+        #region Properties
+        /// <summary>
+        /// Gets or sets the maximum image dimension.
+        /// </summary>
+        /// <remarks>
+        /// When pasting an image, if it has a dimension greater than this value, it will be resized.
+        /// This property is clamped between <see cref="MinMaxImagePasteSize"/> and <see cref="MaxMaxImagePasteSize"/>.
+        /// The default value for this property is <see cref="DefaultMaxImagePasteSize"/>.
+        /// </remarks>
+        public double MaxImageDimension
         {
-            DataObject.AddPastingHandler(element, OnPaste);
+            get => maxImageDimenison;
+            set => maxImageDimenison = Math.Clamp(value, MinMaxImagePasteSize, MaxMaxImagePasteSize);
         }
 
-        internal static void SetMaxImageDimension(double maxImageDimension)
+        /// <summary>
+        /// Gets the <see cref="HtmlToXamlConverter"/> used to convert incoming html
+        /// </summary>
+        public HtmlToXamlConverter Converter
         {
-            MaxImageDimension = Math.Clamp(maxImageDimension, MinMaxImagePasteSize, MaxMaxImagePasteSize);
+            get;
+        }
+        #endregion
+
+        /************************************************************************/
+
+        #region Constructors
+        /// <summary>
+        /// Creates a new instance of <see cref="PasteHandler"/>
+        /// </summary>
+        /// <param name="element">The element to handle.</param>
+        /// <returns></returns>
+        public static PasteHandler Create(DependencyObject element)
+        {
+            return new PasteHandler(element);
+        }
+
+        private PasteHandler(DependencyObject element)
+        {
+            ArgumentNullException.ThrowIfNull(element, nameof(element));
+            DataObject.AddPastingHandler(element, OnPaste);
+            MaxImageDimension = DefaultMaxImagePasteSize;
         }
         #endregion
 
         /************************************************************************/
 
         #region Private methods
-        private static void OnPaste(object sender, DataObjectPastingEventArgs e)
+        private void OnPaste(object sender, DataObjectPastingEventArgs e)
         {
             //ExamineDataObject(e.DataObject);
             DataObject dataObject = (DataObject)e.DataObject;
+            TryHandleHtmlData(sender, dataObject, e);
             TryHandleImageData(dataObject, e);
-            TryHandleHtmlData(dataObject, e);
         }
 
-        private static void TryHandleImageData(DataObject dataObject, DataObjectPastingEventArgs e)
+        private void TryHandleImageData(DataObject dataObject, DataObjectPastingEventArgs e)
         {
-            if (dataObject.ContainsImage() && dataObject.GetImage() is BitmapSource bitmapSource)
+            if (!e.Handled && dataObject.ContainsImage() && dataObject.GetImage() is BitmapSource bitmapSource)
             {
                 double largestDimension = Math.Max(bitmapSource.Width, bitmapSource.Height);
                 if (largestDimension > MaxImageDimension)
@@ -76,25 +120,30 @@ namespace Restless.Converters.Demo
             }
         }
 
-        private static void TryHandleHtmlData(DataObject dataObject, DataObjectPastingEventArgs e)
+        private static void TryHandleHtmlData(object sender, DataObject dataObject, DataObjectPastingEventArgs e)
         {
-            if (!e.Handled && dataObject.ContainsHtml() && dataObject.GetData(DataFormats.Html) is string html)
+            if (!e.Handled && dataObject.GetHtml() is string html)
             {
                 HtmlPasteItem item = new(html);
                 if (item.HasFragment)
                 {
                     DataObject obj = new();
-                    obj.SetText(item.Fragment);
+
+                    if (sender is RichTextBox)
+                    {
+                        string xaml = HtmlToXamlConverter.Create(item.Fragment).Convert();
+                        obj.SetData(DataFormats.Xaml, xaml);
+                    }
+
+                    if (sender is TextBox)
+                    {
+                        obj.SetText(item.Fragment);
+                    }
+
                     e.DataObject = obj;
+                    e.Handled = true;
                 }
-
-                e.Handled = true;
             }
-        }
-
-        private static bool ContainsHtml(this DataObject data)
-        {
-            return data.GetDataPresent(DataFormats.Html);
         }
         #endregion
 
@@ -155,5 +204,11 @@ namespace Restless.Converters.Demo
             return bitmap;
         }
         #endregion
+    }
+
+    internal static class Helper
+    {
+        internal static bool ContainsHtml(this DataObject data) => data.GetDataPresent(DataFormats.Html);
+        internal static string GetHtml(this DataObject data) => data.ContainsHtml() ? data.GetData(DataFormats.Html) as string : null;
     }
 }

@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace Restless.Converters.Demo
+namespace Restless.Converters
 {
     internal class HtmlPasteItem
     {

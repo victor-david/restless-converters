@@ -15,6 +15,7 @@ namespace Restless.Converters.Demo
     {
         private const string LoadFileName = @"D:\Development\Visual_Studio\Projects\Restless.Converters\.docs\site.partial.html";
         private const string SaveFileName = @"D:\Development\Visual_Studio\Projects\Restless.Converters\.docs\rich.flow.xaml";
+        private static readonly string DataFormat = DataFormats.XamlPackage;
 
         public MainWindow()
         {
@@ -36,22 +37,49 @@ namespace Restless.Converters.Demo
             }
         }
 
-        private void ButtonSaveClick(object sender, RoutedEventArgs e)
+        private void ButtonSaveRichTextClick(object sender, RoutedEventArgs e)
         {
-            SaveContentToFile(SaveFileName);
+            SaveRichTextBoxToFile(SaveFileName);
         }
 
-        private void SaveContentToFile(string fileName)
+        private void ButtonLoadRichTextClick(object sender, RoutedEventArgs e)
+        {
+            LoadRichTextBoxFromFile(SaveFileName);
+        }
+
+        private void LoadRichTextBoxFromFile(string fileName)
+        {
+            if (File.Exists(fileName))
+            {
+                try
+                {
+                    using (FileStream fileStream = new(fileName, FileMode.OpenOrCreate))
+                    {
+                        TextRange range = new(Rich.Document.ContentStart, Rich.Document.ContentEnd);
+                        range.Load(fileStream, DataFormat);
+                    }
+                }
+                catch (Exception)
+                {
+                    Rich.AppendText("File is not right format or is corrupted");
+                }
+            }
+            else
+            {
+                Rich.AppendText("File not found");
+            }
+        }
+        private void SaveRichTextBoxToFile(string fileName)
         {
             using (FileStream fileStream = new(fileName, FileMode.Create))
             {
                 TextRange range = new(Rich.Document.ContentStart, Rich.Document.ContentEnd);
-                range.Save(fileStream, DataFormats.Xaml);
+                range.Save(fileStream, DataFormat);
             }
         }
 
 
-        private void ButtonLLoadClick(object sender, RoutedEventArgs e)
+        private void ButtonLoadHtmlClick(object sender, RoutedEventArgs e)
         {
             if (File.Exists(LoadFileName))
             {

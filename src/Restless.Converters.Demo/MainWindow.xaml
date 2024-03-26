@@ -35,10 +35,13 @@
         <TextBlock Grid.Column="2" Grid.Row="2" Text="Xaml Box"/>
         <TextBox x:Name="TextBoxXaml" Grid.Column="2" Grid.Row="3" AllowDrop="False"/>
 
-        <Button Grid.Row="4" Content="Save" Click="ButtonSaveClick"/>
+        <StackPanel Grid.Row="4" Orientation="Horizontal">
+            <Button Content="Load" Click="ButtonLoadRichTextClick"/>
+            <Button Content="Save" Click="ButtonSaveRichTextClick"/>
+        </StackPanel>
 
         <StackPanel Grid.Column="2" Grid.Row="4" Orientation="Horizontal">
-            <Button Content="Load" Click="ButtonLLoadClick"/>
+            <Button Content="Load" Click="ButtonLoadHtmlClick"/>
             <Button Content="Convert" Click="ButtonConvertClick"/>
             <Button Content="To Rich" Click="ButtonToRichClick"/>
             <Button Content="Clear Html" Click="ButtonClearHtmlClick"/>

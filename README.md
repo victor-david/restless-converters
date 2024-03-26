@@ -1,44 +1,39 @@
 # Restless Converters
 
-This project provides an Html to Xaml converter in order to be able to paste (or drag and drop) information from a web site into a Rich Text Box.
+This project provides an Html to Xaml converter and a custom paste handler in order to be able to paste (or drag and drop) information from a web site into a Rich Text Box.
 
-The Html to Xaml converter does not attempt to completely replicate the Html. For example, it enables you to specify what an incoming **H1** element
+The Html to Xaml converter does not attempt to completely replicate the Html. Insetad, it enables you to specify what an incoming **H1** element
 should look like, rather than copying the style used on the web site. Other tags may be similarly customized.
 
 ## Usage
 
 ```c#
 string html = GetHtml();
-HtmlToXamlConverter converter = new(html);
-string xaml = converter.Convert();
+string xaml = HtmlToXamlConverter.Create().SetHtml(html).Convert();
 ```
 
 You can also supply an optional **ConverterOptions** object
 
 ```c#
 string html = GetHtml();
-HtmlToXamlConverter converter = new(html, new ConverterOptions()
+string xaml = HtmlToXamlConverter.Create(new ConverterOptions()
 {
     AddDefaultBlockConfigs = true,
     IsOutputIndented = true,
     SetPreserve = false
-});
-string xaml = converter.Convert();
+}) .SetHtml(html).Convert();
 ```
 
-or, if you like call chaining with static constructor
+## Converter Options
+Converter options enable you to affect how the xaml is generated.
 
-```c#
-string xaml = HtmlToXamlConverter.Create(GetHtml(), new ConverterOptions()
-{
-    AddDefaultBlockConfigs = false,
-    IsOutputIndented = false,
-    SetPreserve = true,
-}).Convert();
-```
-## Work in Progress
-This is a work in progress.
-
+| Property | Type | Description |
+| --- | --- | --- |
+| SectionConfig | BlockConfig | Provides access to the configuration that is applied to Xaml Section nodes |
+| AddDefaultBlockConfigs | bool | Determines whether default block configurations are applied. Defaults include settings for **H1**, **H2**, **UL**, **OL**, and others. You can change any defaults before conversion or supply your own, or both. |
+| ProcessUnknown | bool | Determines whether unknown nodes are processed. When an unknown node is processed, it appears in the xaml with its name and inner text. The default is **false**. Mostly a debugging aide. |
+| SetPreserve | bool | Determines whether the xaml output has **xml:space preserve** added. The default is **false**. |
+| IsOutputIndented | bool | Determines whether xaml output is indented. When **false**, xaml is all on one long line. The default is **true**. |
 
 
 

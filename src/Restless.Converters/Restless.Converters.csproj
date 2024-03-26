@@ -1,0 +1,28 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <AssemblyName>Restless.Converters</AssemblyName>
+    <AssemblyTitle>Restless.Converters</AssemblyTitle>
+    <Authors>Restless Animal Development</Authors>
+    <Company>Restless Animal Development</Company>
+    <Copyright>Copyright © 2024 Restless Animal Development</Copyright>
+    <Description>Provides html to xaml and other converters</Description>
+    <OutputType>Library</OutputType>
+    <PackageId>Restless.Converters</PackageId>
+    <PackageLicenseExpression>GPL-3.0-only</PackageLicenseExpression>
+    <PackageProjectUrl>https://github.com/victor-david/restless-converters</PackageProjectUrl>
+    <PackageTags>html xaml bitmap</PackageTags>
+    <Platforms>AnyCPU</Platforms>
+    <RepositoryUrl>https://github.com/victor-david/restless-converters</RepositoryUrl>
+    <RootNamespace>Restless.Converters</RootNamespace>
+    <TargetFramework>net7.0-windows</TargetFramework>
+    <Title>Restless Converters</Title>
+    <UseWPF>true</UseWPF>
+    <Version>1.0.0</Version>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="HtmlAgilityPack" Version="1.11.59" />
+  </ItemGroup>
+
+</Project>

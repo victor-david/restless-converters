@@ -1,0 +1,11 @@
+.vs/
+.docs/
+*.suo
+obj/
+bin/
+*.user
+Thumbs.db
+desktop.ini
+launchSettings.json
+install.cmd
+ClassDiagram.cd

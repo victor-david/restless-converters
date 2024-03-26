@@ -62,21 +62,9 @@ namespace Restless.Converters
         private HtmlToXamlConverter(ConverterOptions options)
         {
             ArgumentNullException.ThrowIfNull(options);
-
             Options = options;
-
             BlockConfig = new BlockConfigCollection(Options.AddDefaultBlockConfigs);
-            BlockConfig.Add(new BlockConfig("img", 18, FontWeights.DemiBold)
-            {
-                Background = Brushes.Yellow,
-                Foreground = Brushes.DimGray,
-                BorderBrush = Brushes.DarkBlue,
-                BorderThickness = new Thickness(2),
-                Padding = new Thickness(10),
-            });
         }
-
-
         #endregion
 
         /************************************************************************/
@@ -94,6 +82,25 @@ namespace Restless.Converters
         {
             ArgumentException.ThrowIfNullOrEmpty(html, nameof(html));
             Html = html;
+            return this;
+        }
+
+        /// <summary>
+        /// Adds (or updates) a <see cref="BlockConfig"/> object to the collection
+        /// </summary>
+        /// <param name="blockConfig">The block config</param>
+        /// <returns>This instance</returns>
+        /// <exception cref="ArgumentNullException">
+        /// <paramref name="blockConfig"/> is null
+        /// </exception>
+        /// <remarks>
+        /// You can also add and update block config objects via the collection property directly.
+        /// This method provides a way to chain calls to the <see cref="HtmlToXamlConverter"/> instance.
+        /// </remarks>
+        public HtmlToXamlConverter SetBlockConfig(BlockConfig blockConfig)
+        {
+            ArgumentNullException.ThrowIfNull(blockConfig);
+            BlockConfig.Add(blockConfig);
             return this;
         }
 
@@ -183,7 +190,6 @@ namespace Restless.Converters
                 case HtmlElementType.Unknown:
                     ProcessUnknownElement(node, parent);
                     break;
-
             }
         }
 
@@ -267,19 +273,6 @@ namespace Restless.Converters
                         break;
                 }
             }
-        }
-
-        private static void ProcessAnchorElement(HtmlNode node, XmlElement parent)
-        {
-            if (parent.IsNamed(Tokens.XamlParagraph))
-            {
-
-            }
-            if (parent.IsNamed(Tokens.XamlSection))
-            {
-
-            }
-
         }
         #endregion
 
@@ -369,18 +362,18 @@ namespace Restless.Converters
         #region Private methods (image)
         private void ProcessImageElement(HtmlNode node, XmlElement element)
         {
-            if (node.Attributes["src"] is HtmlAttribute attrib)
+            if (node.Attributes[Tokens.HtmlSource] is HtmlAttribute attrib)
             {
                 if (element.IsNamed(Tokens.XamlParagraph))
                 {
-                    element.AddRunElement().AddChildText(attrib.Value);
+                    element.AddImageElement().SetSource(attrib.Value);
                 }
 
                 if (element.IsNamed(Tokens.XamlSection))
                 {
                     XmlElement paragraph = element.AddParagraphElement();
                     ApplyBlockConfig(node, paragraph);
-                    paragraph.AddRunElement().AddChildText(attrib.Value);
+                    paragraph.AddImageElement().SetSource(attrib.Value);
                 }
             }
         }

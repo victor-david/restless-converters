@@ -4,6 +4,7 @@ using System.IO;
 using System.Text;
 using System.Windows;
 using System.Windows.Documents;
+using System.Windows.Media;
 
 namespace Restless.Converters.Demo
 {
@@ -64,8 +65,15 @@ namespace Restless.Converters.Demo
             {
                 TextBoxXaml.Text = HtmlToXamlConverter.Create(new ConverterOptions()
                 {
-                    ProcessUnknown = true,
-                }) .SetHtml(TextBoxHtml.Text).Convert();
+                    ProcessUnknown = true
+                }).SetBlockConfig(new BlockConfig("img")
+                {
+                    Background = Brushes.BlanchedAlmond,
+                    Foreground = Brushes.DimGray,
+                    BorderBrush = Brushes.DarkBlue,
+                    BorderThickness = new Thickness(2),
+                    Padding = new Thickness(10),
+                }).SetHtml(TextBoxHtml.Text).Convert();
             }
         }
 

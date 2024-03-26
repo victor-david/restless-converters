@@ -110,6 +110,7 @@ namespace Restless.Converters
         public static XmlElement AddSpanElement(this XmlNode parent) => AddChildElement(parent, Tokens.XamlSpan);
         public static XmlElement AddRunElement(this XmlNode parent) => AddChildElement(parent, Tokens.XamlRun);
         public static XmlElement AddHyperlinkElement(this XmlNode parent) => AddChildElement(parent, Tokens.XamlHyperlink);
+        public static XmlElement AddImageElement(this XmlNode parent) => AddChildElement(parent, Tokens.XamlImage);
 
         public static XmlElement AddListElement(this XmlNode parent) => AddChildElement(parent, Tokens.XamlList);
         public static XmlElement AddListItemElement(this XmlNode parent) => AddChildElement(parent, Tokens.XamlListItem);
@@ -132,6 +133,12 @@ namespace Restless.Converters
             return parent;
         }
 
+        public static XmlElement SetHeight(this XmlElement parent, double height)
+        {
+            parent.SetAttribute(Tokens.XamlHeight, Math.Max(0, height).ToString());
+            return parent;
+        }
+
         public static XmlElement SetForeground(this XmlElement parent, Brush brush)
         {
             if (brush is not null)
@@ -150,6 +157,18 @@ namespace Restless.Converters
         public static XmlElement SetItalic(this XmlElement parent)
         {
             parent.SetAttribute(Tokens.XamlFontStyle, Tokens.XamlFontStyleItalic);
+            return parent;
+        }
+
+        public static XmlElement SetSource(this XmlElement parent, string source)
+        {
+            parent.SetAttribute(Tokens.XamlSource, source);
+            return parent;
+        }
+
+        public static XmlElement SetStretch(this XmlElement parent, Stretch stretch)
+        {
+            parent.SetAttribute(Tokens.XamlStretch, stretch.ToString());
             return parent;
         }
 

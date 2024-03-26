@@ -18,6 +18,11 @@
         internal const string XamlRun = "Run";
         internal const string XamlHyperlink = "Hyperlink";
 
+        internal const string XamlImage = "Image";
+        internal const string XamlSource = "Source";
+        internal const string XamlStretch = "Stretch";
+        internal const string XamlStretchNone = "None";
+
         internal const string XamlList = "List";
         internal const string XamlListItem = "ListItem";
         internal const string XamlListMarkerStyle = "MarkerStyle";
@@ -38,6 +43,8 @@
         internal const string XamlTableCellColumnSpan = "ColumnSpan";
         internal const string XamlTableCellRowSpan = "RowSpan";
 
+        internal const string XamlHeight = "Height";
+        internal const string XamlWidth = "Width";
         internal const string XamlFontSize = "FontSize";
         internal const string XamlFontStyle = "FontStyle";
         internal const string XamlFontStyleItalic = "Italic";
@@ -57,6 +64,7 @@
         internal const string HtmlEmphasis = "em";
         internal const string HtmlAnchor = "a";
         internal const string HtmlHref = "href";
+        internal const string HtmlSource = "src";
         internal const string HtmlOrderedList = "ol";
         internal const string HtmlUnorderedList = "ul";
         internal const string HtmlListItem = "li";

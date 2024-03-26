@@ -4,7 +4,7 @@
     {
         internal static readonly string[] SectionBlocks = { "div", "section", "header", "figure" };
         internal static readonly string[] ParagraphBlocks = { "h1", "h2", "h3", "h4", "h5", "h6", "p" };
-        internal static readonly string[] InlineElements = { "b", "strong", "i", "em", "span" };
+        internal static readonly string[] InlineElements = { "b", "strong", "i", "em", "span", "a" };
         internal static readonly string[] ListElements = { "ul", "ol" };
         internal static readonly string[] ListItemElements = { "li" };
         internal static readonly string[] TableElements = { "table", "thead", "tbody", "tfooter", "tr", "th", "td" };
@@ -16,6 +16,7 @@
         internal const string XamlParagraph = "Paragraph";
         internal const string XamlSpan = "Span";
         internal const string XamlRun = "Run";
+        internal const string XamlHyperlink = "Hyperlink";
 
         internal const string XamlList = "List";
         internal const string XamlListItem = "ListItem";
@@ -47,12 +48,15 @@
         internal const string XamlBorderBrush = "BorderBrush";
         internal const string XamlBorderThickness = "BorderThickness";
         internal const string XamlPadding = "Padding";
+        internal const string XamlNavigateUri = "NavigateUri";
 
         internal const string HtmlDiv = "div";
         internal const string HtmlBold = "b";
         internal const string HtmlStrong = "strong";
         internal const string HtmlItalic = "i";
         internal const string HtmlEmphasis = "em";
+        internal const string HtmlAnchor = "a";
+        internal const string HtmlHref = "href";
         internal const string HtmlOrderedList = "ol";
         internal const string HtmlUnorderedList = "ul";
         internal const string HtmlListItem = "li";

@@ -244,23 +244,36 @@ namespace Restless.Converters
         {
             if (parent.IsNamed(Tokens.XamlParagraph))
             {
-                XmlElement run = parent.AddRunElement();
-                run.AddChildText(node.GetCleanInnerText(false));
-
                 switch (node.Name)
                 {
+                    case Tokens.HtmlAnchor:
+                        parent.AddHyperlinkElement().SetNavigateUri(node).AddChildText(node.GetCleanInnerText(true));
+                        break;
                     case Tokens.HtmlBold:
                     case Tokens.HtmlStrong:
-                        run.SetAttribute(Tokens.XamlFontWeight, Tokens.XamlFontWeightBold);
+                        parent.AddRunElement().SetBold().AddChildText(node.GetCleanInnerText(false));
                         break;
                     case Tokens.HtmlItalic:
                     case Tokens.HtmlEmphasis:
-                        run.SetAttribute(Tokens.XamlFontStyle, Tokens.XamlFontStyleItalic);
+                        parent.AddRunElement().SetItalic().AddChildText(node.GetCleanInnerText(false));
                         break;
                     default:
                         break;
                 }
             }
+        }
+
+        private static void ProcessAnchorElement(HtmlNode node, XmlElement parent)
+        {
+            if (parent.IsNamed(Tokens.XamlParagraph))
+            {
+
+            }
+            if (parent.IsNamed(Tokens.XamlSection))
+            {
+
+            }
+
         }
         #endregion
 

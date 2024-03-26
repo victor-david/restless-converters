@@ -20,6 +20,20 @@ namespace Restless.Converters.Demo
             InitializeComponent();
             //PasteHandler.Initialize(Rich);
             PasteHandler.Initialize(TextBoxHtml);
+            Rich.IsDocumentEnabled = true;
+            AddHandler(Hyperlink.RequestNavigateEvent, new RoutedEventHandler(OnNavigationRequest));
+        }
+
+        private void OnNavigationRequest(object sender, RoutedEventArgs e)
+        {
+            if (e.OriginalSource is Hyperlink source && source.NavigateUri.ToString().IsValidUri())
+            {
+                Process.Start(new ProcessStartInfo()
+                {
+                    FileName = source.NavigateUri.ToString(),
+                    UseShellExecute = true,
+                });
+            }
         }
 
         private void ButtonSaveClick(object sender, RoutedEventArgs e)

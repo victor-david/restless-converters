@@ -109,6 +109,8 @@ namespace Restless.Converters
         public static XmlElement AddParagraphElement(this XmlNode parent) => AddChildElement(parent, Tokens.XamlParagraph);
         public static XmlElement AddSpanElement(this XmlNode parent) => AddChildElement(parent, Tokens.XamlSpan);
         public static XmlElement AddRunElement(this XmlNode parent) => AddChildElement(parent, Tokens.XamlRun);
+        public static XmlElement AddHyperlinkElement(this XmlNode parent) => AddChildElement(parent, Tokens.XamlHyperlink);
+
         public static XmlElement AddListElement(this XmlNode parent) => AddChildElement(parent, Tokens.XamlList);
         public static XmlElement AddListItemElement(this XmlNode parent) => AddChildElement(parent, Tokens.XamlListItem);
         public static XmlElement AddTableElement(this XmlNode parent) => AddChildElement(parent, Tokens.XamlTable);
@@ -142,6 +144,21 @@ namespace Restless.Converters
         public static XmlElement SetBold(this XmlElement parent)
         {
             parent.SetAttribute(Tokens.XamlFontWeight, Tokens.XamlFontWeightBold);
+            return parent;
+        }
+
+        public static XmlElement SetItalic(this XmlElement parent)
+        {
+            parent.SetAttribute(Tokens.XamlFontStyle, Tokens.XamlFontStyleItalic);
+            return parent;
+        }
+
+        public static XmlElement SetNavigateUri(this XmlElement parent, HtmlNode node)
+        {
+            if (node.Attributes[Tokens.HtmlHref] is HtmlAttribute attrib && !attrib.Value.StartsWith("#") && attrib.Value.IsValidUri())
+            {
+                parent.SetAttribute(Tokens.XamlNavigateUri, attrib.Value);
+            }
             return parent;
         }
 
@@ -230,6 +247,19 @@ namespace Restless.Converters
 
         #region Other extensions
         public static bool IsZero(this Thickness t) => t.Bottom == 0 && t.Left == 0 && t.Right == 0 && t.Top == 0;
+
+        public static bool IsValidUri(this string uri)
+        {
+            if (!Uri.IsWellFormedUriString(uri, UriKind.Absolute))
+            {
+                return false;
+            }
+            if (!Uri.TryCreate(uri, UriKind.Absolute, out Uri temp))
+            {
+                return false;
+            }
+            return temp.Scheme == Uri.UriSchemeHttp || temp.Scheme == Uri.UriSchemeHttps;
+        }
         #endregion
     }
 }

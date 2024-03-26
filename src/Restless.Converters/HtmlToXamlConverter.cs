@@ -10,14 +10,24 @@ namespace Restless.Converters
 {
     public class HtmlToXamlConverter
     {
-        #region Private
-        private readonly string html;
-        private readonly ConverterOptions options;
-        #endregion
-
-        /************************************************************************/
-
         #region Public properties
+        /// <summary>
+        /// Gets the html to be converted.
+        /// </summary>
+        public string Html
+        {
+            get;
+            private set;
+        }
+
+        /// <summary>
+        /// Gets the converter options.
+        /// </summary>
+        public ConverterOptions Options { get; }
+
+        /// <summary>
+        /// Gets the block config collection.
+        /// </summary>
         public BlockConfigCollection BlockConfig { get; }
         #endregion
 
@@ -25,26 +35,37 @@ namespace Restless.Converters
 
         #region Constructors
         /// <summary>
+        /// Creates a new instance of the <see cref="HtmlToXamlConverter"/> class
+        /// </summary>
+        /// <returns>A new instance of <see cref="HtmlToXamlConverter"/></returns>
+        public static HtmlToXamlConverter Create()
+        {
+            return new HtmlToXamlConverter(new ConverterOptions());
+        }
+
+        /// <summary>
         /// Initializes a new instance of the <see cref="HtmlToXamlConverter"/> class
         /// </summary>
-        /// <param name="html">The html to convert</param>
-        public HtmlToXamlConverter(string html) : this(html, new ConverterOptions())
+        /// <param name="options">Converter options</param>
+        /// <returns>A new instance of <see cref="HtmlToXamlConverter"/></returns>
+        public static HtmlToXamlConverter Create(ConverterOptions options)
         {
+            return new HtmlToXamlConverter(options);
         }
+
 
         /// <summary>
         /// Initializes a new instance of the <see cref="HtmlToXamlConverter"/> class
         /// </summary>
         /// <param name="html">The html to convert</param>
         /// <param name="options">Converter options</param>
-        public HtmlToXamlConverter(string html, ConverterOptions options)
+        private HtmlToXamlConverter(ConverterOptions options)
         {
-            ArgumentException.ThrowIfNullOrEmpty(html);
             ArgumentNullException.ThrowIfNull(options);
-            this.html = html;
-            this.options = options;
 
-            BlockConfig = new BlockConfigCollection(this.options.AddDefaultBlockConfigs);
+            Options = options;
+
+            BlockConfig = new BlockConfigCollection(Options.AddDefaultBlockConfigs);
             BlockConfig.Add(new BlockConfig("img", 18, FontWeights.DemiBold)
             {
                 Background = Brushes.Yellow,
@@ -55,56 +76,57 @@ namespace Restless.Converters
             });
         }
 
-        /// <summary>
-        /// Creates a new instance of the <see cref="HtmlToXamlConverter"/> class
-        /// </summary>
-        /// <param name="html">The html to convert</param>
-        /// <returns>A new instance of <see cref="HtmlToXamlConverter"/></returns>
-        public static HtmlToXamlConverter Create(string html)
-        {
-            return new HtmlToXamlConverter(html);
-        }
 
-        /// <summary>
-        /// Initializes a new instance of the <see cref="HtmlToXamlConverter"/> class
-        /// </summary>
-        /// <param name="html">The html to convert</param>
-        /// <param name="options">Converter options</param>
-        /// <returns>A new instance of <see cref="HtmlToXamlConverter"/></returns>
-        public static HtmlToXamlConverter Create(string html, ConverterOptions options)
-        {
-            return new HtmlToXamlConverter(html, options);
-        }
         #endregion
 
         /************************************************************************/
 
         #region Public methods
         /// <summary>
+        /// Sets the html to be converted
+        /// </summary>
+        /// <param name="html">The html</param>
+        /// <returns>This instance</returns>
+        /// <exception cref="ArgumentException">
+        /// <paramref name="html"/> is null or empty
+        /// </exception>
+        public HtmlToXamlConverter SetHtml(string html)
+        {
+            ArgumentException.ThrowIfNullOrEmpty(html, nameof(html));
+            Html = html;
+            return this;
+        }
+
+        /// <summary>
         /// Converts the html specified in the constructor
         /// </summary>
         /// <returns>A XAML string</returns>
+        /// <exception cref="ArgumentException">
+        /// The <see cref="Html"/> property has not been set.
+        /// </exception>
         public string Convert()
         {
+            ArgumentException.ThrowIfNullOrEmpty(Html, nameof(Html));
+
             XmlDocument xamlDoc = new();
             HtmlDocument htmlDoc = new();
 
             XmlElement xamlTopElement = xamlDoc.AddSectionElement();
-            xamlTopElement.ApplyBlockConfig(options.SectionConfig);
+            xamlTopElement.ApplyBlockConfig(Options.SectionConfig);
 
-            htmlDoc.LoadHtml(html);
+            htmlDoc.LoadHtml(Html);
             htmlDoc.DocumentNode.RemoveAllCommentNodes();
 
             WalkNodes(htmlDoc.DocumentNode, xamlTopElement);
 
-            if (options.SetPreserve)
+            if (Options.SetPreserve)
             {
                 xamlTopElement.SetAttribute("xml:space", "preserve");
             }
 
             XmlWriterSettings xmlWriterSettings = new()
             {
-                Indent = options.IsOutputIndented,
+                Indent = Options.IsOutputIndented,
                 OmitXmlDeclaration = true,
             };
 
@@ -112,22 +134,6 @@ namespace Restless.Converters
             xamlDoc.Save(XmlWriter.Create(builder, xmlWriterSettings));
             return builder.ToString();
         }
-        #endregion
-
-        /************************************************************************/
-
-        #region HtmlNodeType (Ref)
-        //public enum HtmlNodeType
-        //{
-        //    // The root of a document.
-        //    Document,
-        //    // An HTML element.
-        //    Element,
-        //    // An HTML comment.
-        //    Comment,
-        //    // A text node is always the child of an element or a document node.
-        //    Text
-        //}
         #endregion
 
         /************************************************************************/
@@ -212,7 +218,7 @@ namespace Restless.Converters
             else
             {
                 XmlElement section = parent.AddSectionElement();
-                section.ApplyBlockConfig(options.SectionConfig);
+                section.ApplyBlockConfig(Options.SectionConfig);
                 WalkNodes(node, section);
             }
 
@@ -385,7 +391,7 @@ namespace Restless.Converters
         #region Private methods
         private void ProcessUnknownElement(HtmlNode node, XmlElement parent)
         {
-            if (options.ProcessUnknown)
+            if (Options.ProcessUnknown)
             {
                 if (parent.IsNamed(Tokens.XamlParagraph))
                 {

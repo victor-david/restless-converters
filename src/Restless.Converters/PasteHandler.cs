@@ -83,6 +83,7 @@ namespace Restless.Converters
             ArgumentNullException.ThrowIfNull(element, nameof(element));
             DataObject.AddPastingHandler(element, OnPaste);
             MaxImageDimension = DefaultMaxImagePasteSize;
+            Converter = HtmlToXamlConverter.Create();
         }
         #endregion
 
@@ -120,7 +121,7 @@ namespace Restless.Converters
             }
         }
 
-        private static void TryHandleHtmlData(object sender, DataObject dataObject, DataObjectPastingEventArgs e)
+        private void TryHandleHtmlData(object sender, DataObject dataObject, DataObjectPastingEventArgs e)
         {
             if (!e.Handled && dataObject.GetHtml() is string html)
             {
@@ -131,7 +132,7 @@ namespace Restless.Converters
 
                     if (sender is RichTextBox)
                     {
-                        string xaml = HtmlToXamlConverter.Create(item.Fragment).Convert();
+                        string xaml = Converter.SetHtml(item.Fragment).Convert();
                         obj.SetData(DataFormats.Xaml, xaml);
                     }
 

@@ -62,10 +62,10 @@ namespace Restless.Converters.Demo
         {
             if (TextBoxHtml.Text.Length > 0)
             {
-                TextBoxXaml.Text = HtmlToXamlConverter.Create(TextBoxHtml.Text, new ConverterOptions()
+                TextBoxXaml.Text = HtmlToXamlConverter.Create(new ConverterOptions()
                 {
                     ProcessUnknown = true,
-                }).Convert();
+                }) .SetHtml(TextBoxHtml.Text).Convert();
             }
         }
 

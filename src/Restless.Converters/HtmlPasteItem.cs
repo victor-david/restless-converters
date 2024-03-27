@@ -38,6 +38,18 @@ namespace Restless.Converters
                     Fragment = line.Substring(StartFragmentId.Length, line.Length - StartFragmentId.Length - EndFragmentId.Length);
                 }
             }
+
+            // Sometimes, the fragment is all on its own line and sometimes it's split across multiple lines.
+            // If it hasn't been set, check the entire string.
+            if (string.IsNullOrEmpty(Fragment))
+            {
+                int startIdx = Input.IndexOf(StartFragmentId);
+                int endIdx = Input.IndexOf(EndFragmentId);
+                if (startIdx >= 0 && endIdx > startIdx)
+                {
+                    Fragment = Input.Substring(startIdx + StartFragmentId.Length, endIdx - startIdx - StartFragmentId.Length);
+                }
+            }
         }
 
         public override string ToString()

@@ -46,7 +46,7 @@
         /// </summary>
         public ConverterOptions()
         {
-            SetPreserve = true;
+            SetPreserve = false;
             IsOutputIndented = true;
             AddDefaultBlockConfigs = true;
             ProcessUnknown = false;

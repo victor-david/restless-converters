@@ -2,7 +2,6 @@
 using System;
 using System.Linq;
 using System.Text;
-using System.Windows;
 using System.Windows.Media;
 using System.Xml;
 
@@ -124,7 +123,9 @@ namespace Restless.Converters
             htmlDoc.LoadHtml(Html);
             htmlDoc.DocumentNode.RemoveAllCommentNodes();
 
-            WalkNodes(htmlDoc.DocumentNode, xamlTopElement);
+            HtmlNode startNode = htmlDoc.DocumentNode.SelectSingleNode("//body") ?? htmlDoc.DocumentNode;
+
+            WalkNodes(startNode, xamlTopElement);
 
             if (Options.SetPreserve)
             {
@@ -388,14 +389,24 @@ namespace Restless.Converters
             {
                 if (parent.IsNamed(Tokens.XamlParagraph))
                 {
-                    XmlElement span = parent.AddSpanElement().SetForeground(Brushes.Red);
-                    span.AddRunElement().AddChildText("[Unknown node ");
-                    span.AddRunElement().SetBold().AddChildText(node.Name);
-                    span.AddRunElement().AddChildText(", inner text: ");
-                    span.AddRunElement().SetBold().AddChildText(node.InnerText);
-                    span.AddRunElement().AddChildText("]");
+                    AddUnknownToParagraph(node, parent);
+                }
+
+                if (parent.IsNamed(Tokens.XamlSection))
+                {
+                    AddUnknownToParagraph(node, parent.AddParagraphElement());
                 }
             }
+        }
+
+        private static void AddUnknownToParagraph(HtmlNode node, XmlElement parent)
+        {
+            XmlElement span = parent.AddSpanElement().SetForeground(Brushes.Red);
+            span.AddRunElement().AddChildText("[Unknown node ");
+            span.AddRunElement().SetBold().AddChildText(node.Name);
+            span.AddRunElement().AddChildText(", inner text: ");
+            span.AddRunElement().AddChildText(node.InnerText);
+            span.AddRunElement().AddChildText("]");
         }
         #endregion
 

@@ -2,12 +2,13 @@
 {
     internal static class Tokens
     {
-        internal static readonly string[] SectionBlocks = { "div", "section", "header", "figure" };
+        internal static readonly string[] SectionBlocks = { "main", "div", "section", "header", "figure", "figcaption", "footer" };
         internal static readonly string[] ParagraphBlocks = { "h1", "h2", "h3", "h4", "h5", "h6", "p" };
         internal static readonly string[] InlineElements = { "b", "strong", "i", "em", "span", "a" };
         internal static readonly string[] ListElements = { "ul", "ol" };
         internal static readonly string[] ListItemElements = { "li" };
         internal static readonly string[] TableElements = { "table", "thead", "tbody", "tfooter", "tr", "th", "td" };
+        internal static readonly string[] IgnoredElements = { "head", "meta", "link", "script", "nav", "button" };
 
         internal static readonly string[] ImageElements = { "img" };
 

@@ -38,6 +38,10 @@
         /// </summary>
         Image,
         /// <summary>
+        /// The element is deliberately ignored
+        /// </summary>
+        Ignore,
+        /// <summary>
         /// The element is an unknown or unsupported type
         /// </summary>
         Unknown

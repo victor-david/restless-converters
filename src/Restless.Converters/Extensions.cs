@@ -42,6 +42,11 @@ namespace Restless.Converters
             {
                 return HtmlElementType.Image;
             }
+
+            if (Tokens.IgnoredElements.Contains(node.Name))
+            {
+                return HtmlElementType.Ignore;
+            }
             return HtmlElementType.Unknown;
         }
 
@@ -162,7 +167,10 @@ namespace Restless.Converters
 
         public static XmlElement SetSource(this XmlElement parent, string source)
         {
-            parent.SetAttribute(Tokens.XamlSource, source);
+            if (source.IsValidUri())
+            {
+                parent.SetAttribute(Tokens.XamlSource, source);
+            }
             return parent;
         }
 

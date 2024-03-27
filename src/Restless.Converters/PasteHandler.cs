@@ -27,22 +27,22 @@ namespace Restless.Converters
 
         #region Constructors
         /// <summary>
-        /// Creates a new instance of <see cref="PasteHandler"/>
+        /// Registers the specified element and returns a new instance of <see cref="PasteHandler"/>
         /// </summary>
         /// <param name="element">The element to handle.</param>
         /// <returns>A new instance of <see cref="PasteHandler"/></returns>
-        public static PasteHandler Create(TextBoxBase element)
+        public static PasteHandler Register(TextBoxBase element)
         {
             return new PasteHandler(element, new PasteHandlerOptions());
         }
 
         /// <summary>
-        /// Creates a new instance of <see cref="PasteHandler"/>
+        /// Registers the specified element and returns a new instance of <see cref="PasteHandler"/>
         /// </summary>
         /// <param name="element">The element to handle.</param>
         /// <param name="options">The paste handler options</param>
         /// <returns>A new instance of <see cref="PasteHandler"/></returns>
-        public static PasteHandler Create(TextBoxBase element, PasteHandlerOptions options)
+        public static PasteHandler Register(TextBoxBase element, PasteHandlerOptions options)
         {
             return new PasteHandler(element, options);
         }

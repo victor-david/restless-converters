@@ -28,7 +28,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <None Include="../../README.md" Pack="True" PackagePath=""/>
+    <None Include="../../docs/README.md" Pack="True" PackagePath=""/>
   </ItemGroup>
 
 </Project>

@@ -13,7 +13,7 @@ namespace Restless.Converters.Demo
     /// </summary>
     public partial class MainWindow : Window
     {
-        private const string LoadFileName = @"D:\Development\Visual_Studio\Projects\Restless.Converters\.docs\site.partial.html";
+        private const string LoadFileName = @"D:\Development\Visual_Studio\Projects\Restless.Converters\.docs\site.full.html";
         private const string SaveFileName = @"D:\Development\Visual_Studio\Projects\Restless.Converters\.docs\rich.flow.xaml";
         private static readonly string DataFormat = DataFormats.XamlPackage;
 
@@ -93,6 +93,7 @@ namespace Restless.Converters.Demo
             {
                 TextBoxXaml.Text = HtmlToXamlConverter.Create(new ConverterOptions()
                 {
+                    IsOutputIndented = true,
                     ProcessUnknown = true
                 }).SetBlockConfig(new BlockConfig("img")
                 {
@@ -108,6 +109,15 @@ namespace Restless.Converters.Demo
         [DebuggerHidden]
         private void ButtonToRichClick(object sender, RoutedEventArgs e)
         {
+            if (TextBoxXaml.Text.Length > 0)
+            {
+                TryLoadRichTextBox();
+            }
+        }
+
+        [DebuggerHidden]
+        private void TryLoadRichTextBox()
+        {
             try
             {
                 using (MemoryStream mem = new(Encoding.UTF8.GetBytes(TextBoxXaml.Text)))
@@ -118,11 +128,7 @@ namespace Restless.Converters.Demo
             }
             catch (Exception ex)
             {
-                using (MemoryStream mem = new(Encoding.UTF8.GetBytes(ex.Message)))
-                {
-                    TextRange range = new(Rich.Document.ContentStart, Rich.Document.ContentEnd);
-                    range.Load(mem, DataFormats.Rtf);
-                }
+                Rich.AppendText(ex.Message);
             }
         }
 

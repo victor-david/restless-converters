@@ -27,6 +27,7 @@
         <RichTextBox
             x:Name="Rich"
             Grid.Column="0" Grid.Row="1" Grid.RowSpan="3"
+            ScrollViewer.VerticalScrollBarVisibility="Auto"
             IsDocumentEnabled="True"/>
 
         <TextBlock Grid.Column="2" Text="Html Box"/>

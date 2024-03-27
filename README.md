@@ -1,6 +1,6 @@
 # Restless Converters
 
-This project provides an Html to Xaml converter and a custom paste handler in order to be able to paste (or drag and drop) information from a web site into a Rich Text Box.
+This project provides an Html to Xaml converter and a custom paste handler that enables you to copy/paste (or drag/drop) information from a web site into a Rich Text Box.
 
 The Html to Xaml converter does not attempt to completely replicate the incoming html. Instead, it enables you to specify (for instance) the appearance of an incoming **H1** element, 
 rather than copying the style used on the web site. Other tags may be similarly customized.

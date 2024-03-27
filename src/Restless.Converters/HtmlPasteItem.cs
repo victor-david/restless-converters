@@ -14,6 +14,7 @@ namespace Restless.Converters
         public string SourceUrl { get; }
         public string Fragment { get; }
         public bool HasFragment => !string.IsNullOrEmpty(Fragment);
+        public bool HasSourceUrl => !string.IsNullOrEmpty(SourceUrl);
 
         internal HtmlPasteItem(string input)
         {

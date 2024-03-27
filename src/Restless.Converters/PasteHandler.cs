@@ -80,7 +80,7 @@ namespace Restless.Converters
         {
             //ExamineDataObject(e.DataObject);
             DataObject dataObject = (DataObject)e.DataObject;
-            TryHandleHtmlData(sender, dataObject, e);
+            TryHandleHtmlData(dataObject, e);
             TryHandleImageData(dataObject, e);
         }
 
@@ -107,7 +107,7 @@ namespace Restless.Converters
             }
         }
 
-        private void TryHandleHtmlData(object sender, DataObject dataObject, DataObjectPastingEventArgs e)
+        private void TryHandleHtmlData(DataObject dataObject, DataObjectPastingEventArgs e)
         {
             if (!e.Handled && dataObject.GetHtml() is string html && Options.HtmlPasteAction != HtmlPasteAction.None)
             {
@@ -116,14 +116,16 @@ namespace Restless.Converters
                 {
                     DataObject obj = new();
 
+                    string attribution = GetSourceAttribution(item);
+
                     switch (Options.HtmlPasteAction)
                     {
                         case HtmlPasteAction.ConvertToText:
-                            obj.SetText(item.Fragment);
+                            obj.SetText(item.Fragment + attribution);
                             break;
                         case HtmlPasteAction.ConvertToXaml:
                         case HtmlPasteAction.ConvertToXamlText:
-                            string xaml = Converter.SetHtml(item.Fragment).Convert();
+                            string xaml = Converter.SetHtml(item.Fragment + attribution).Convert();
                             string format = Options.HtmlPasteAction == HtmlPasteAction.ConvertToXaml ? DataFormats.Xaml : DataFormats.Text;
                             obj.SetData(format, xaml);
                             break;
@@ -135,6 +137,16 @@ namespace Restless.Converters
                     e.Handled = true;
                 }
             }
+        }
+
+        private static string GetSourceAttribution(HtmlPasteItem item)
+        {
+            if (item.HasSourceUrl)
+            {
+                return $"<p>Pasted from <a href=\"{item.SourceUrl}\">{item.SourceUrl}</a></p>";
+            }
+
+            return string.Empty;
         }
         #endregion
 

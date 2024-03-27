@@ -1,5 +1,7 @@
 # Restless Converters
 
+[![Nuget](https://img.shields.io/nuget/v/Restless.Converters.svg?style=flat-square)](https://www.nuget.org/packages/Restless.Converters/) 
+
 This project provides an Html to Xaml converter and a custom paste handler that enables you to copy/paste (or drag/drop) information from a web site 
 into the FlowDocument of a Rich Text Box.
 

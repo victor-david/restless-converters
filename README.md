@@ -33,7 +33,7 @@ Converter options enable you to affect how the xaml is generated.
 | AddDefaultBlockConfigs | bool | Determines whether default block configurations are applied. Defaults include settings for **H1**, **H2**, **UL**, **OL**, and others. You can change any defaults before conversion or supply your own, or both. |
 | ProcessUnknown | bool | Determines whether unknown nodes are processed. When an unknown node is processed, it appears in the xaml with its name and inner text. The default is **false**. Mostly a debugging aide. |
 | SetPreserve | bool | Determines whether the xaml output has **xml:space preserve** added. The default is **false**. |
-| IsOutputIndented | bool | Determines whether xaml output is indented. When **false**, xaml is all on one long line. The default is **true**. |
+| IsOutputIndented | bool | Determines whether xaml output is indented. When **false**, xaml is all on one long line. When **true**, the xaml is broken up into lines, indented, and easier to read. The default is **false**. |
 
 
 

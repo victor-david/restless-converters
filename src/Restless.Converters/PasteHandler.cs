@@ -80,8 +80,8 @@ namespace Restless.Converters
         {
             //ExamineDataObject(e.DataObject);
             DataObject dataObject = (DataObject)e.DataObject;
-            TryHandleHtmlData(dataObject, e);
             TryHandleImageData(dataObject, e);
+            TryHandleHtmlData(dataObject, e);
         }
 
         private void TryHandleImageData(DataObject dataObject, DataObjectPastingEventArgs e)

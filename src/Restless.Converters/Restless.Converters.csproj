@@ -6,7 +6,7 @@
     <Authors>Restless Animal Development</Authors>
     <Company>Restless Animal Development</Company>
     <Copyright>Copyright © 2024 Restless Animal Development</Copyright>
-    <Description>Provides html to xaml conversion and custom paste handling in order to copy/paste (or drag/drop) information from a web site into a Rich Text Box.</Description>
+    <Description>Provides html to xaml conversion and custom paste handling that enables you to copy/paste (or drag/drop) information from a web site into a Rich Text Box.</Description>
     <OutputType>Library</OutputType>
     <PackageId>Restless.Converters</PackageId>
     <PackageLicenseExpression>GPL-3.0-only</PackageLicenseExpression>

@@ -21,7 +21,7 @@ namespace Restless.Converters.Demo
         {
             InitializeComponent();
             PasteHandler.Create(Rich);
-            PasteHandler.Create(TextBoxHtml);
+            PasteHandler.Create(TextBoxHtml, new PasteHandlerOptions(HtmlPasteAction.ConvertToText));
             AddHandler(Hyperlink.RequestNavigateEvent, new RoutedEventHandler(OnNavigationRequest));
         }
 

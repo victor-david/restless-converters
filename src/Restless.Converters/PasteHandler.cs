@@ -11,61 +11,16 @@ namespace Restless.Converters
 {
     public class PasteHandler
     {
-        #region Private
-        private double maxImageDimenison;
-        private static class OtherFormats
-        {
-            public const string SysDrawingBitmap = "System.Drawing.Bitmap";
-            public const string Format17 = "Format17";
-            public const string DeviceIndependentBitmap = "DeviceIndependentBitmap";
-        }
-        #endregion
-
-        /************************************************************************/
-
-        #region Constants (public)
-        /// <summary>
-        /// Gets the minimum value that may be assigned to <see cref="MaxImageDimension"/>.
-        /// </summary>
-        public const double MinMaxImagePasteSize = 100;
-
-        /// <summary>
-        /// Gets the maximum value that may be assigned to <see cref="MaxImageDimension"/>.
-        /// </summary>
-        public const double MaxMaxImagePasteSize = 800;
-
-        /// <summary>
-        /// Gets the default value for <see cref="MaxImageDimension"/>.
-        /// </summary>
-        public const double DefaultMaxImagePasteSize = 500;
-        #endregion
-
-        /************************************************************************/
-
         #region Properties
         /// <summary>
-        /// Gets or sets the maximum image dimension.
+        /// Gets the options that affect the behavior of this instance
         /// </summary>
-        /// <remarks>
-        /// When pasting an image, if it has a dimension greater than this value, it will be resized.
-        /// This property is clamped between <see cref="MinMaxImagePasteSize"/> and <see cref="MaxMaxImagePasteSize"/>.
-        /// The default value for this property is <see cref="DefaultMaxImagePasteSize"/>.
-        /// </remarks>
-        public double MaxImageDimension
-        {
-            get => maxImageDimenison;
-            set => maxImageDimenison = Math.Clamp(value, MinMaxImagePasteSize, MaxMaxImagePasteSize);
-        }
+        public PasteHandlerOptions Options { get; }
 
         /// <summary>
         /// Gets the <see cref="HtmlToXamlConverter"/> used to convert incoming html
         /// </summary>
         public HtmlToXamlConverter Converter { get; }
-
-        /// <summary>
-        /// Gets the html paste action
-        /// </summary>
-        public HtmlPasteAction PasteAction { get; }
         #endregion
 
         /************************************************************************/
@@ -78,37 +33,40 @@ namespace Restless.Converters
         /// <returns>A new instance of <see cref="PasteHandler"/></returns>
         public static PasteHandler Create(TextBoxBase element)
         {
-            return new PasteHandler(element, HtmlPasteAction.Auto);
+            return new PasteHandler(element, new PasteHandlerOptions());
         }
 
         /// <summary>
         /// Creates a new instance of <see cref="PasteHandler"/>
         /// </summary>
         /// <param name="element">The element to handle.</param>
-        /// <param name="pasteAction">The action to take upon html paste</param>
+        /// <param name="options">The paste handler options</param>
         /// <returns>A new instance of <see cref="PasteHandler"/></returns>
-        public static PasteHandler Create(TextBoxBase element, HtmlPasteAction pasteAction)
+        public static PasteHandler Create(TextBoxBase element, PasteHandlerOptions options)
         {
-            return new PasteHandler(element, pasteAction);
+            return new PasteHandler(element, options);
         }
 
-        private PasteHandler(TextBoxBase element, HtmlPasteAction pasteAction)
+        private PasteHandler(TextBoxBase element, PasteHandlerOptions options)
         {
             ArgumentNullException.ThrowIfNull(element, nameof(element));
-            DataObject.AddPastingHandler(element, OnPaste);
-            MaxImageDimension = DefaultMaxImagePasteSize;
+            ArgumentNullException.ThrowIfNull(options, nameof(options));
+
+            Options = options;
             Converter = HtmlToXamlConverter.Create();
-            PasteAction = pasteAction;
-            if (PasteAction == HtmlPasteAction.Auto)
+
+            DataObject.AddPastingHandler(element, OnPaste);
+
+            if (Options.HtmlPasteAction == HtmlPasteAction.Auto)
             {
                 if (element is TextBox)
                 {
-                    PasteAction = HtmlPasteAction.None;
+                    Options.HtmlPasteAction = HtmlPasteAction.None;
                 }
 
                 if (element is RichTextBox)
                 {
-                    PasteAction = HtmlPasteAction.ConvertToXaml;
+                    Options.HtmlPasteAction = HtmlPasteAction.ConvertToXaml;
                 }
             }
 
@@ -131,9 +89,9 @@ namespace Restless.Converters
             if (!e.Handled && dataObject.ContainsImage() && dataObject.GetImage() is BitmapSource bitmapSource)
             {
                 double largestDimension = Math.Max(bitmapSource.Width, bitmapSource.Height);
-                if (largestDimension > MaxImageDimension)
+                if (largestDimension > Options.MaxImageDimension)
                 {
-                    double scale = MaxImageDimension / largestDimension;
+                    double scale = Options.MaxImageDimension / largestDimension;
                     if (ToBitmap(bitmapSource) is Bitmap bitmap)
                     {
                         Bitmap resizedBitmap = new(bitmap, new System.Drawing.Size((int)(bitmap.Width * scale), (int)(bitmap.Height * scale)));
@@ -151,14 +109,14 @@ namespace Restless.Converters
 
         private void TryHandleHtmlData(object sender, DataObject dataObject, DataObjectPastingEventArgs e)
         {
-            if (!e.Handled && dataObject.GetHtml() is string html && PasteAction != HtmlPasteAction.None)
+            if (!e.Handled && dataObject.GetHtml() is string html && Options.HtmlPasteAction != HtmlPasteAction.None)
             {
                 HtmlPasteItem item = new(html);
                 if (item.HasFragment)
                 {
                     DataObject obj = new();
 
-                    switch (PasteAction)
+                    switch (Options.HtmlPasteAction)
                     {
                         case HtmlPasteAction.ConvertToText:
                             obj.SetText(item.Fragment);
@@ -166,7 +124,7 @@ namespace Restless.Converters
                         case HtmlPasteAction.ConvertToXaml:
                         case HtmlPasteAction.ConvertToXamlText:
                             string xaml = Converter.SetHtml(item.Fragment).Convert();
-                            string format = PasteAction == HtmlPasteAction.ConvertToXaml ? DataFormats.Xaml : DataFormats.Text;
+                            string format = Options.HtmlPasteAction == HtmlPasteAction.ConvertToXaml ? DataFormats.Xaml : DataFormats.Text;
                             obj.SetData(format, xaml);
                             break;
                         default:

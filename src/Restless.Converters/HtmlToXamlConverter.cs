@@ -9,6 +9,12 @@ namespace Restless.Converters
 {
     public class HtmlToXamlConverter
     {
+        #region Private
+        private string siteBase;
+        #endregion
+
+        /************************************************************************/
+
         #region Public properties
         /// <summary>
         /// Gets the html to be converted.
@@ -123,6 +129,9 @@ namespace Restless.Converters
             htmlDoc.LoadHtml(Html);
             htmlDoc.DocumentNode.RemoveAllCommentNodes();
 
+            // Get the site base if it exists. May be used later to complete relative images
+            siteBase = GetSiteBase(htmlDoc.DocumentNode.SelectSingleNode("//head/base"));
+
             HtmlNode startNode = htmlDoc.DocumentNode.SelectSingleNode("//body") ?? htmlDoc.DocumentNode;
 
             WalkNodes(startNode, xamlTopElement);
@@ -228,7 +237,6 @@ namespace Restless.Converters
                 section.ApplyBlockConfig(Options.SectionConfig);
                 WalkNodes(node, section);
             }
-
         }
 
         private void ProcessParagraphElement(HtmlNode node, XmlElement parent)
@@ -361,22 +369,38 @@ namespace Restless.Converters
         /************************************************************************/
 
         #region Private methods (image)
-        private void ProcessImageElement(HtmlNode node, XmlElement element)
+        private void ProcessImageElement(HtmlNode node, XmlElement parent)
         {
             if (node.Attributes[Tokens.HtmlSource] is HtmlAttribute attrib)
             {
-                if (element.IsNamed(Tokens.XamlParagraph))
+                string imgSource = GetCompleteImageSource(attrib.Value);
+
+                if (parent.IsNamed(Tokens.XamlParagraph))
                 {
-                    element.AddImageElement().SetSource(attrib.Value);
+                    parent.AddImageElement().SetSource(imgSource);
                 }
 
-                if (element.IsNamed(Tokens.XamlSection))
+                if (parent.IsNamed(Tokens.XamlSection))
                 {
-                    XmlElement paragraph = element.AddParagraphElement();
+                    XmlElement paragraph = parent.AddParagraphElement();
                     ApplyBlockConfig(node, paragraph);
-                    paragraph.AddImageElement().SetSource(attrib.Value);
+                    paragraph.AddImageElement().SetSource(imgSource);
                 }
             }
+        }
+
+        private string GetCompleteImageSource(string imgSource)
+        {
+            if (!imgSource.IsValidUri() && !string.IsNullOrEmpty(siteBase))
+            {
+                if (imgSource.StartsWith("/"))
+                {
+                    imgSource = imgSource[1..];
+                }
+                // siteBase always ends with a slash. See GetSiteBase() below
+                return $"{siteBase}{imgSource}";
+            }
+            return imgSource;
         }
         #endregion
 
@@ -419,6 +443,20 @@ namespace Restless.Converters
             {
                 element.ApplyBlockConfig(blockConfig);
             }
+        }
+
+        private static string GetSiteBase(HtmlNode baseNode)
+        {
+            if (baseNode != null && baseNode.Attributes[Tokens.HtmlHref] is HtmlAttribute attrib)
+            {
+                string baseStr = attrib.Value;
+                if (!baseStr.EndsWith("/"))
+                {
+                    baseStr += "/";
+                }
+                return baseStr;
+            }
+            return null;
         }
         #endregion
     }

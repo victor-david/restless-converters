@@ -2,7 +2,7 @@
 
 This project provides an Html to Xaml converter and a custom paste handler in order to be able to paste (or drag and drop) information from a web site into a Rich Text Box.
 
-The Html to Xaml converter does not attempt to completely replicate the Html. Instead, it enables you to specify (for instance) the appearance of an incoming **H1** element, 
+The Html to Xaml converter does not attempt to completely replicate the incoming html. Instead, it enables you to specify (for instance) the appearance of an incoming **H1** element, 
 rather than copying the style used on the web site. Other tags may be similarly customized.
 
 ## Usage
@@ -25,7 +25,7 @@ string xaml = HtmlToXamlConverter.Create(new ConverterOptions()
 ```
 
 ## Converter Options
-Converter options enable you to affect how the xaml is generated.
+Converter options affect how the xaml is generated.
 
 | Property | Type | Description |
 | --- | --- | --- |

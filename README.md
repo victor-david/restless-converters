@@ -1,6 +1,7 @@
 # Restless Converters
 
-This project provides an Html to Xaml converter and a custom paste handler that enables you to copy/paste (or drag/drop) information from a web site into a Rich Text Box.
+This project provides an Html to Xaml converter and a custom paste handler that enables you to copy/paste (or drag/drop) information from a web site 
+into the FlowDocument of a Rich Text Box.
 
 The Html to Xaml converter does not attempt to completely replicate the incoming html. Instead, it enables you to specify (for instance) the appearance of an incoming **H1** element, 
 rather than copying the style used on the web site. Other tags may be similarly customized.
@@ -35,7 +36,6 @@ Converter options affect how the xaml is generated.
 | SetPreserve | bool | Determines whether the xaml output has **xml:space preserve** added. The default is **false**. |
 | IsOutputIndented | bool | Determines whether xaml output is indented. When **false**, xaml is all on one long line. When **true**, the xaml is broken up into lines, indented, and easier to read. The default is **false**. |
 
-
-
-
+## Paste Handler
+Paste handler provides a way to register controls for custom paste handling. 
 

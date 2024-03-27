@@ -47,7 +47,7 @@
         public ConverterOptions()
         {
             SetPreserve = false;
-            IsOutputIndented = true;
+            IsOutputIndented = false;
             AddDefaultBlockConfigs = true;
             ProcessUnknown = false;
             SectionConfig = new BlockConfig(SectionBlockId, 12.5);

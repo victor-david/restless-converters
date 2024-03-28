@@ -63,6 +63,7 @@
         internal const string HtmlStrong = "strong";
         internal const string HtmlItalic = "i";
         internal const string HtmlEmphasis = "em";
+        internal const string HtmlSpan = "span";
         internal const string HtmlAnchor = "a";
         internal const string HtmlHref = "href";
         internal const string HtmlSource = "src";

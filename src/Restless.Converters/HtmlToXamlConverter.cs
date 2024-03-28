@@ -209,7 +209,7 @@ namespace Restless.Converters
             {
                 if (parent.IsNamed(Tokens.XamlParagraph))
                 {
-                    parent.AddChildText(node.GetCleanInnerText(false));
+                    parent.AddChildText(node.GetCleanInnerText());
                 }
 
                 if (parent.IsNamed(Tokens.XamlSection))
@@ -229,7 +229,7 @@ namespace Restless.Converters
             {
                 XmlElement para = parent.AddParagraphElement();
                 ApplyBlockConfig(node, para);
-                para.AddChildText(node.GetCleanInnerText(true));
+                para.AddChildText(node.GetCleanInnerText());
             }
             else
             {
@@ -247,7 +247,7 @@ namespace Restless.Converters
                 ApplyBlockConfig(node, paragraph);
                 if (node.HasOnlyText())
                 {
-                    paragraph.AddChildText(node.GetCleanInnerText(true));
+                    paragraph.AddChildText(node.GetCleanInnerText());
                 }
                 else
                 {
@@ -268,15 +268,15 @@ namespace Restless.Converters
                 switch (node.Name)
                 {
                     case Tokens.HtmlAnchor:
-                        parent.AddHyperlinkElement().SetNavigateUri(node).AddChildText(node.GetCleanInnerText(true));
+                        parent.AddHyperlinkElement().SetNavigateUri(node).AddChildText(node.GetCleanInnerText());
                         break;
                     case Tokens.HtmlBold:
                     case Tokens.HtmlStrong:
-                        parent.AddRunElement().SetBold().AddChildText(node.GetCleanInnerText(false));
+                        parent.AddRunElement().SetBold().AddChildText(node.GetCleanInnerText());
                         break;
                     case Tokens.HtmlItalic:
                     case Tokens.HtmlEmphasis:
-                        parent.AddRunElement().SetItalic().AddChildText(node.GetCleanInnerText(false));
+                        parent.AddRunElement().SetItalic().AddChildText(node.GetCleanInnerText());
                         break;
                     default:
                         break;
@@ -357,8 +357,7 @@ namespace Restless.Converters
                             ApplyBlockConfig(dNode, cell);
                             cell.SetColumnSpan(dNode, colCount);
                             cell.SetRowSpan(dNode, rowCount);
-                            cell.AddParagraphElement().AddChildText(dNode.GetCleanInnerText(true));
-
+                            cell.AddParagraphElement().AddChildText(dNode.GetCleanInnerText());
                         }
                     }
                 }

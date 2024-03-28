@@ -77,11 +77,9 @@ namespace Restless.Converters
         public static int ChildCount(this HtmlNode node, HtmlNodeType nodeType) => node.ChildNodes.Count(n => n.NodeType == nodeType);
 
         public static bool IsEmptyText(this HtmlNode node) => node.NodeType == HtmlNodeType.Text && node.InnerText.Trim().Length == 0;
-        public static string GetCleanInnerText(this HtmlNode node, bool trim)
-        {
-            string result = node.InnerText.Replace("&nbsp;", " ");
-            return trim ? result.Trim() : result;
-        }
+
+        public static string GetCleanInnerText(this HtmlNode node) => node.InnerText.Replace("&nbsp;", " ");
+        public static string GetCleanDirectInnerText(this HtmlNode node) => node.GetDirectInnerText().Replace("&nbsp;", " ");
 
         /// <summary>
         /// Removes all comment nodes from the parent and all its descendants

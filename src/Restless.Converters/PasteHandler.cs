@@ -100,10 +100,10 @@ namespace Restless.Converters
                             DataObject newDataObject = new();
                             newDataObject.SetImage(resizedBitmapSource);
                             e.DataObject = newDataObject;
-                            e.Handled = true;
                         }
                     }
                 }
+                e.Handled = true;
             }
         }
 
@@ -141,7 +141,7 @@ namespace Restless.Converters
 
         private static string GetSourceAttribution(HtmlPasteItem item)
         {
-            if (item.HasSourceUrl)
+            if (item.HasSourceUrl && !item.SourceUrl.StartsWith("about:"))
             {
                 return $"<p>Pasted from <a href=\"{item.SourceUrl}\">{item.SourceUrl}</a></p>";
             }

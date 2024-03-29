@@ -214,6 +214,30 @@ namespace Restless.Converters
             return parent;
         }
 
+
+
+        public static void SetColumnSpan(this XmlElement cell, HtmlNode node)
+        {
+            if (cell.IsNamed(Tokens.XamlTableCell) && node.Attributes[Tokens.HtmlTableColSpan] is HtmlAttribute attrib)
+            {
+                if (int.TryParse(attrib.Value, out int result))
+                {
+                    cell.SetAttribute(Tokens.XamlTableCellColumnSpan, result.ToString());
+                }
+            }
+        }
+
+        public static void SetRowSpan(this XmlElement cell, HtmlNode node)
+        {
+            if (cell.IsNamed(Tokens.XamlTableCell) && node.Attributes[Tokens.HtmlTableRowSpan] is HtmlAttribute attrib)
+            {
+                if (int.TryParse(attrib.Value, out int result))
+                {
+                    cell.SetAttribute(Tokens.XamlTableCellRowSpan, result.ToString());
+                }
+            }
+        }
+
         /// <summary>
         /// Sets the column span attribute on the cell element if the node specifies it.
         /// </summary>
@@ -292,6 +316,9 @@ namespace Restless.Converters
         public static bool AcceptsSection(this XmlNode node) => Tokens.AcceptsSection.Contains(node.Name);
         public static bool AcceptsParagraph(this XmlNode node) => Tokens.AcceptsParagraph.Contains(node.Name);
         public static bool AcceptsTable(this XmlNode node) => Tokens.AcceptsTable.Contains(node.Name);
+        public static bool AcceptsTableRowGroup(this XmlNode node) => Tokens.AcceptsTableRowGroup.Contains(node.Name);
+        public static bool AcceptsTableRow(this XmlNode node) => Tokens.AcceptsTableRow.Contains(node.Name);
+        public static bool AcceptsTableCell(this XmlNode node) => Tokens.AcceptsTableCell.Contains(node.Name);
         public static bool AcceptsList(this XmlNode node) => Tokens.AcceptsList.Contains(node.Name);
         public static bool AcceptsListItem(this XmlNode node) => Tokens.AcceptsListItem.Contains(node.Name);
         public static bool AcceptsInline(this XmlNode node) => Tokens.AcceptsInline.Contains(node.Name);

@@ -203,6 +203,7 @@ namespace Restless.Converters
                     ProcessTableElement(node, parent);
                     break;
                 case HtmlElementType.TableItem:
+                    ProcessTableItemElement(node, parent);
                     break;
                 case HtmlElementType.Image:
                     ProcessImageElement(node, parent);
@@ -340,63 +341,70 @@ namespace Restless.Converters
         /************************************************************************/
 
         #region Private methods (Table)
+        /// <summary>
+        /// https://learn.microsoft.com/en-us/dotnet/desktop/wpf/advanced/how-to-define-a-table-with-xaml?view=netframeworkdesktop-4.8
+        /// </summary>
         private void ProcessTableElement(HtmlNode node, XmlElement parent)
         {
             if (parent.AcceptsTable())
             {
-                ProcessTable(node, parent);
+                XmlElement table = parent.AddTableElement();
+                ApplyBlockConfig(node, table);
+                WalkNodes(node, table);
             }
         }
 
-        /// <summary>
-        /// https://learn.microsoft.com/en-us/dotnet/desktop/wpf/advanced/how-to-define-a-table-with-xaml?view=netframeworkdesktop-4.8
-        /// </summary>
-        private void ProcessTable(HtmlNode node, XmlElement parent)
+        private void ProcessTableItemElement(HtmlNode node, XmlElement parent)
         {
-            int colCount = 0;
-            int rowCount = 0;
-            foreach (HtmlNode row in node.Descendants(Tokens.HtmlTableRow))
+            switch (node.Name)
             {
-                rowCount++;
-                colCount = Math.Max(colCount, row.Descendants(Tokens.HtmlTableHeadCell).Count());
-                colCount = Math.Max(colCount, row.Descendants(Tokens.HtmlTableCell).Count());
+                case Tokens.HtmlTableHead:
+                case Tokens.HtmlTableBody:
+                case Tokens.HtmlTableFooter:
+                    ProcessTableRowGroupElement(node, parent);
+                    break;
+                case Tokens.HtmlTableRow:
+                    ProcessTableRowElement(node, parent);
+                    break;
+                case Tokens.HtmlTableHeadCell:
+                case Tokens.HtmlTableCell:
+                    ProcessTableCellElement(node, parent);
+                    break;
             }
+        }
 
-            if (colCount > 0)
+        private void ProcessTableRowGroupElement(HtmlNode node, XmlElement parent)
+        {
+            if (parent.AcceptsTableRowGroup())
             {
-                XmlElement table = parent.AddTableElement();
-                ApplyBlockConfig(node, table);
+                XmlElement tableRowGroup = parent.AddTableRowGroupElement();
+                WalkNodes(node, tableRowGroup);
+            }
+        }
 
-                XmlElement columnGroup = table.AddTableColumnGroupElement();
-                for (int k = 0; k < colCount; k++)
-                {
-                    columnGroup.AddTableColumnElement();
-                }
+        private void ProcessTableRowElement(HtmlNode node, XmlElement parent)
+        {
+            if (parent.AcceptsTableRow())
+            {
+                XmlElement tableRow = parent.AddTableRowElement();
+                WalkNodes(node, tableRow);
+            }
+            else if (parent.AcceptsTableRowGroup())
+            {
+                XmlElement tableRow = parent.AddTableRowGroupElement().AddTableRowElement();
+                WalkNodes(node, tableRow);
+            }
+        }
 
-                XmlElement tableRowGroup = table.AddTableRowGroupElement();
-
-                foreach (HtmlNode rowNode in node.Descendants(Tokens.HtmlTableRow))
-                {
-                    XmlElement tableRow = tableRowGroup.AddTableRowElement();
-                    foreach (HtmlNode dNode in rowNode.Descendants())
-                    {
-                        if (dNode.IsTableCell())
-                        {
-                            XmlElement cell = tableRow.AddTableCellElement();
-                            ApplyBlockConfig(dNode, cell);
-                            cell.SetColumnSpan(dNode, colCount);
-                            cell.SetRowSpan(dNode, rowCount);
-                            if (dNode.HasOnlyText())
-                            {
-                                cell.AddParagraphElement().AddChildText(dNode.GetCleanInnerText());
-                            }
-                            else
-                            {
-                                WalkNodes(dNode, cell);
-                            }
-                        }
-                    }
-                }
+        private void ProcessTableCellElement(HtmlNode node, XmlElement parent)
+        {
+            if (parent.AcceptsTableCell())
+            {
+                XmlElement tableCell = parent.AddTableCellElement();
+                ApplyBlockConfig(node, tableCell);
+                tableCell.SetColumnSpan(node);
+                tableCell.SetRowSpan(node);
+                WalkNodes(node, tableCell);
             }
         }
         #endregion

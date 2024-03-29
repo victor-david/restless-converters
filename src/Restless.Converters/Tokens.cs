@@ -2,13 +2,14 @@
 {
     internal static class Tokens
     {
-        internal static readonly string[] SectionBlocks = { "main", "div", "section", "header", "figure", "figcaption", "footer" };
-        internal static readonly string[] ParagraphBlocks = { "h1", "h2", "h3", "h4", "h5", "h6", "p" };
-        internal static readonly string[] InlineElements = { "b", "strong", "i", "em", "span", "a" };
-        internal static readonly string[] ListElements = { "ul", "ol" };
-        internal static readonly string[] ListItemElements = { "li" };
-        internal static readonly string[] TableElements = { "table" };
-        internal static readonly string[] TableItemElements = { "thead", "tbody", "tfooter", "tr", "th", "td" };
+        #region Arrays
+        internal static readonly string[] SectionBlocks = { HtmlMain, HtmlDiv, HtmlSection, HtmlHeader, HtmlFigure, HtmlFigureCaption, HtmlFooter };
+        internal static readonly string[] ParagraphBlocks = { HtmlHeader1, HtmlHeader2, HtmlHeader3, HtmlHeader4, HtmlHeader5, HtmlHeader6, HtmlParagraph };
+        internal static readonly string[] InlineElements = { HtmlBold, HtmlStrong, HtmlItalic, HtmlEmphasis, HtmlSpan, HtmlAnchor };
+        internal static readonly string[] ListElements = { HtmlOrderedList, HtmlUnorderedList };
+        internal static readonly string[] ListItemElements = { HtmlListItem };
+        internal static readonly string[] TableElements = { HtmlTable };
+        internal static readonly string[] TableItemElements = { HtmlTableHead, HtmlTableBody, HtmlTableFooter, HtmlTableRow, HtmlTableHeadCell, HtmlTableCell };
 
         internal static readonly string[] IgnoredElements = { "head", "meta", "link", "script", "nav", "button" };
 
@@ -16,12 +17,21 @@
 
         internal static readonly string[] AcceptsSection = { XamlFlowDocument, XamlSection };
         internal static readonly string[] AcceptsParagraph = { XamlSection, XamlListItem, XamlTableCell };
-        internal static readonly string[] AcceptsTable = { XamlSection };
-        internal static readonly string[] AcceptsList = { XamlSection };
+
+        internal static readonly string[] AcceptsTable = { XamlSection, XamlListItem, XamlTableCell };
+        internal static readonly string[] AcceptsTableRowGroup = { XamlTable };
+        internal static readonly string[] AcceptsTableRow = { XamlTableRowGroup };
+        internal static readonly string[] AcceptsTableCell = { XamlTableRow };
+
+        internal static readonly string[] AcceptsList = { XamlSection, XamlListItem, XamlTableCell };
         internal static readonly string[] AcceptsListItem = { XamlList };
         internal static readonly string[] AcceptsInline = { XamlParagraph, XamlSpan, XamlRun, XamlBold, XamlItalic };
         internal static readonly string[] AcceptsText = { XamlParagraph, XamlSpan, XamlRun, XamlBold, XamlItalic };
+        #endregion
 
+        /************************************************************************/
+
+        #region Xaml
         internal const string XamlNamespace = "http://schemas.microsoft.com/winfx/2006/xaml/presentation";
         internal const string XamlFlowDocument = "FlowDocument";
         internal const string XamlSection = "Section";
@@ -70,27 +80,50 @@
         internal const string XamlBorderThickness = "BorderThickness";
         internal const string XamlPadding = "Padding";
         internal const string XamlNavigateUri = "NavigateUri";
+        #endregion
 
+        /************************************************************************/
+
+        #region Html
+        internal const string HtmlMain = "main";
+        internal const string HtmlSection = "section";
         internal const string HtmlDiv = "div";
+        internal const string HtmlHeader = "header";
+        internal const string HtmlFooter = "footer";
+        internal const string HtmlFigure = "figure";
+        internal const string HtmlFigureCaption = "figcaption";
+
+        internal const string HtmlHeader1 = "h1";
+        internal const string HtmlHeader2 = "h2";
+        internal const string HtmlHeader3 = "h3";
+        internal const string HtmlHeader4 = "h4";
+        internal const string HtmlHeader5 = "h5";
+        internal const string HtmlHeader6 = "h6";
+        internal const string HtmlParagraph = "p";
+
         internal const string HtmlBold = "b";
         internal const string HtmlStrong = "strong";
         internal const string HtmlItalic = "i";
         internal const string HtmlEmphasis = "em";
         internal const string HtmlSpan = "span";
         internal const string HtmlAnchor = "a";
+
         internal const string HtmlHref = "href";
         internal const string HtmlSource = "src";
+
         internal const string HtmlOrderedList = "ol";
         internal const string HtmlUnorderedList = "ul";
         internal const string HtmlListItem = "li";
+
         internal const string HtmlTable = "table";
         internal const string HtmlTableHead = "thead";
         internal const string HtmlTableBody = "tbody";
-        internal const string HtmlTableFooter = "tfooter";
+        internal const string HtmlTableFooter = "tfoot";
         internal const string HtmlTableRow = "tr";
         internal const string HtmlTableHeadCell = "th";
         internal const string HtmlTableCell = "td";
         internal const string HtmlTableColSpan = "colspan";
         internal const string HtmlTableRowSpan = "rowspan";
+        #endregion
     }
 }

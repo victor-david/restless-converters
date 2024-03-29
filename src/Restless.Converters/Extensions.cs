@@ -108,6 +108,7 @@ namespace Restless.Converters
         /************************************************************************/
 
         #region XamlElement extensions
+        public static XmlElement AddFlowDocumentElement(this XmlNode parent) => AddChildElement(parent, Tokens.XamlFlowDocument);
         public static XmlElement AddSectionElement(this XmlNode parent) => AddChildElement(parent, Tokens.XamlSection);
         public static XmlElement AddParagraphElement(this XmlNode parent) => AddChildElement(parent, Tokens.XamlParagraph);
         public static XmlElement AddSpanElement(this XmlNode parent) => AddChildElement(parent, Tokens.XamlSpan);

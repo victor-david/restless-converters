@@ -1,6 +1,5 @@
 ﻿using HtmlAgilityPack;
 using System;
-using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Windows.Media;
@@ -59,7 +58,6 @@ namespace Restless.Converters
             return new HtmlToXamlConverter(options);
         }
 
-
         /// <summary>
         /// Initializes a new instance of the <see cref="HtmlToXamlConverter"/> class
         /// </summary>
@@ -111,7 +109,7 @@ namespace Restless.Converters
         }
 
         /// <summary>
-        /// Converts the html specified in the constructor
+        /// Converts the html that was specified in the <see cref="SetHtml(string)"/> method.
         /// </summary>
         /// <returns>A XAML string</returns>
         /// <exception cref="ArgumentException">
@@ -124,8 +122,16 @@ namespace Restless.Converters
             XmlDocument xamlDoc = new();
             HtmlDocument htmlDoc = new();
 
-            XmlElement xamlTopElement = xamlDoc.AddSectionElement();
-            xamlTopElement.ApplyBlockConfig(Options.SectionConfig);
+            XmlElement xamlTopElement = Options.IsTopLevelFlowDocument ? xamlDoc.AddFlowDocumentElement() : xamlDoc.AddSectionElement();
+            if (xamlTopElement.IsNamed(Tokens.XamlSection))
+            {
+                xamlTopElement.ApplyBlockConfig(Options.SectionConfig);
+            }
+
+            if (Options.SetPreserve)
+            {
+                xamlTopElement.SetAttribute("xml:space", "preserve");
+            }
 
             htmlDoc.LoadHtml(Html);
             htmlDoc.DocumentNode.RemoveAllCommentNodes();
@@ -135,12 +141,13 @@ namespace Restless.Converters
 
             HtmlNode startNode = htmlDoc.DocumentNode.SelectSingleNode("//body") ?? htmlDoc.DocumentNode;
 
-            WalkNodes(startNode, xamlTopElement);
-
-            if (Options.SetPreserve)
+            if (xamlTopElement.IsNamed(Tokens.XamlFlowDocument) && startNode.FirstChild?.GetHtmlElementType() != HtmlElementType.Section)
             {
-                xamlTopElement.SetAttribute("xml:space", "preserve");
+                xamlTopElement = xamlTopElement.AddSectionElement();
+                xamlTopElement.ApplyBlockConfig(Options.SectionConfig);
             }
+
+            WalkNodes(startNode, xamlTopElement);
 
             XmlWriterSettings xmlWriterSettings = new()
             {

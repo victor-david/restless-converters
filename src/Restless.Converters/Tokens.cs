@@ -12,7 +12,7 @@
 
         internal static readonly string[] ImageElements = { "img" };
 
-        internal static readonly string[] AcceptsSection = { XamlSection };
+        internal static readonly string[] AcceptsSection = { XamlFlowDocument, XamlSection };
         internal static readonly string[] AcceptsParagraph = { XamlSection, XamlListItem };
         internal static readonly string[] AcceptsList = { XamlSection };
         internal static readonly string[] AcceptsListItem = { XamlList };
@@ -20,6 +20,7 @@
         internal static readonly string[] AcceptsText = { XamlParagraph, XamlSpan, XamlRun, XamlBold, XamlItalic };
 
         internal const string XamlNamespace = "http://schemas.microsoft.com/winfx/2006/xaml/presentation";
+        internal const string XamlFlowDocument = "FlowDocument";
         internal const string XamlSection = "Section";
         internal const string XamlParagraph = "Paragraph";
         internal const string XamlSpan = "Span";

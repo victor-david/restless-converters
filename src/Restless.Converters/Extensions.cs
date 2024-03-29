@@ -273,6 +273,8 @@ namespace Restless.Converters
 
         public static bool AcceptsSection(this XmlNode node) => Tokens.AcceptsSection.Contains(node.Name);
         public static bool AcceptsParagraph(this XmlNode node) => Tokens.AcceptsParagraph.Contains(node.Name);
+        public static bool AcceptsList(this XmlNode node) => Tokens.AcceptsList.Contains(node.Name);
+        public static bool AcceptsListItem(this XmlNode node) => Tokens.AcceptsListItem.Contains(node.Name);
         public static bool AcceptsInline(this XmlNode node) => Tokens.AcceptsInline.Contains(node.Name);
         public static bool AcceptsText(this XmlNode node) => Tokens.AcceptsText.Contains(node.Name);
 

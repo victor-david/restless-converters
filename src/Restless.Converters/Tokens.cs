@@ -14,6 +14,8 @@
 
         internal static readonly string[] AcceptsSection = { XamlSection };
         internal static readonly string[] AcceptsParagraph = { XamlSection, XamlListItem };
+        internal static readonly string[] AcceptsList = { XamlSection };
+        internal static readonly string[] AcceptsListItem = { XamlList };
         internal static readonly string[] AcceptsInline = { XamlParagraph, XamlSpan, XamlRun, XamlBold, XamlItalic };
         internal static readonly string[] AcceptsText = { XamlParagraph, XamlSpan, XamlRun, XamlBold, XamlItalic };
 

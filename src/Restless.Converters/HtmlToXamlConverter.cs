@@ -303,7 +303,7 @@ namespace Restless.Converters
         #region Private methods (List)
         private void ProcessListElement(HtmlNode node, XmlElement parent)
         {
-            if (parent.IsNamed(Tokens.XamlSection))
+            if (parent.AcceptsList())
             {
                 XmlElement list = parent.AddListElement().AddListMarkerStyle(node.Name);
                 ApplyBlockConfig(node, list);
@@ -313,7 +313,7 @@ namespace Restless.Converters
 
         private void ProcessListItemElement(HtmlNode node, XmlElement parent)
         {
-            if (parent.IsNamed(Tokens.XamlList))
+            if (parent.AcceptsListItem())
             {
                 XmlElement listItem = parent.AddListItemElement();
                 if (node.HasOnlyText())

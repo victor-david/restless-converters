@@ -1,5 +1,6 @@
 ﻿using HtmlAgilityPack;
 using System;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Windows.Media;
@@ -207,14 +208,13 @@ namespace Restless.Converters
         {
             if (!node.IsEmptyText())
             {
-                if (parent.IsNamed(Tokens.XamlParagraph))
-                {
-                    parent.AddChildText(node.GetCleanInnerText());
-                }
-
                 if (parent.IsNamed(Tokens.XamlSection))
                 {
                     ProcessParagraphElement(node, parent);
+                }
+                else
+                {
+                    parent.AddChildText(node.GetCleanInnerText());
                 }
             }
         }
@@ -241,7 +241,7 @@ namespace Restless.Converters
 
         private void ProcessParagraphElement(HtmlNode node, XmlElement parent)
         {
-            if (parent.IsNamed(Tokens.XamlSection))
+            if (parent.AcceptsParagraph())
             {
                 XmlElement paragraph = parent.AddParagraphElement();
                 ApplyBlockConfig(node, paragraph);
@@ -255,28 +255,34 @@ namespace Restless.Converters
                 }
             }
 
-            if (parent.IsNamed(Tokens.XamlParagraph))
-            {
-                ProcessInlineElement(node, parent);
-            }
+            //if (parent.IsNamed(Tokens.XamlParagraph))
+            //{
+            //    ProcessInlineElement(node, parent);
+            //}
         }
 
-        private static void ProcessInlineElement(HtmlNode node, XmlElement parent)
+        private void ProcessInlineElement(HtmlNode node, XmlElement parent)
         {
-            if (parent.IsNamed(Tokens.XamlParagraph))
+            if (parent.AcceptsInline())
             {
                 switch (node.Name)
                 {
                     case Tokens.HtmlAnchor:
-                        parent.AddHyperlinkElement().SetNavigateUri(node).AddChildText(node.GetCleanInnerText());
+                        parent.AddHyperlinkElement().SetNavigateUri(node).AddChildText(node.GetCleanDirectInnerText());
                         break;
                     case Tokens.HtmlBold:
                     case Tokens.HtmlStrong:
-                        parent.AddRunElement().SetBold().AddChildText(node.GetCleanInnerText());
+                        XmlElement bold = parent.AddBoldElement();
+                        WalkNodes(node, bold);
                         break;
                     case Tokens.HtmlItalic:
                     case Tokens.HtmlEmphasis:
-                        parent.AddRunElement().SetItalic().AddChildText(node.GetCleanInnerText());
+                        XmlElement italic = parent.AddItalicElement();
+                        WalkNodes(node, italic);
+                        break;
+                    case Tokens.HtmlSpan:
+                        XmlElement span = parent.AddSpanElement();
+                        WalkNodes(node, span);
                         break;
                     default:
                         break;
@@ -298,12 +304,11 @@ namespace Restless.Converters
             }
         }
 
-        private void ProcessListItemElement(HtmlNode node, XmlElement parent)
+        private static void ProcessListItemElement(HtmlNode node, XmlElement parent)
         {
             if (parent.IsNamed(Tokens.XamlList))
             {
-                XmlElement listItemParagraph = parent.AddListItemElement().AddParagraphElement();
-                WalkNodes(node, listItemParagraph);
+                parent.AddListItemElement().AddParagraphElement().AddChildText(node.GetCleanInnerText());
             }
         }
         #endregion

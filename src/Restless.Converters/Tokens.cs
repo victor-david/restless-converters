@@ -1,4 +1,6 @@
-﻿namespace Restless.Converters
+﻿using System.Xml;
+
+namespace Restless.Converters
 {
     internal static class Tokens
     {
@@ -12,11 +14,16 @@
 
         internal static readonly string[] ImageElements = { "img" };
 
+        internal static readonly string[] AcceptsParagraph = { XamlSection };
+        internal static readonly string[] AcceptsInline = { XamlParagraph, XamlSpan, XamlRun, XamlBold, XamlItalic };
+
         internal const string XamlNamespace = "http://schemas.microsoft.com/winfx/2006/xaml/presentation";
         internal const string XamlSection = "Section";
         internal const string XamlParagraph = "Paragraph";
         internal const string XamlSpan = "Span";
         internal const string XamlRun = "Run";
+        internal const string XamlBold = "Bold";
+        internal const string XamlItalic = "Italic";
         internal const string XamlHyperlink = "Hyperlink";
 
         internal const string XamlImage = "Image";

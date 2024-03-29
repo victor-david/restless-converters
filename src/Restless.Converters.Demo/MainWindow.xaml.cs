@@ -13,7 +13,7 @@ namespace Restless.Converters.Demo
     /// </summary>
     public partial class MainWindow : Window
     {
-        private const string LoadFileName = @"D:\Development\Visual_Studio\Projects\Restless.Converters\.docs\site.full.html";
+        private const string LoadFileName = @"D:\Development\Visual_Studio\Projects\Restless.Converters\.docs\simple.html";
         private const string SaveFileName = @"D:\Development\Visual_Studio\Projects\Restless.Converters\.docs\rich.flow.xaml";
         private static readonly string DataFormat = DataFormats.XamlPackage;
 

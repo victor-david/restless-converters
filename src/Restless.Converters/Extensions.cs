@@ -112,6 +112,10 @@ namespace Restless.Converters
         public static XmlElement AddParagraphElement(this XmlNode parent) => AddChildElement(parent, Tokens.XamlParagraph);
         public static XmlElement AddSpanElement(this XmlNode parent) => AddChildElement(parent, Tokens.XamlSpan);
         public static XmlElement AddRunElement(this XmlNode parent) => AddChildElement(parent, Tokens.XamlRun);
+        public static XmlElement AddBoldElement(this XmlNode parent) => AddChildElement(parent, Tokens.XamlBold);
+        public static XmlElement AddItalicElement(this XmlNode parent) => AddChildElement(parent, Tokens.XamlItalic);
+
+
         public static XmlElement AddHyperlinkElement(this XmlNode parent) => AddChildElement(parent, Tokens.XamlHyperlink);
         public static XmlElement AddImageElement(this XmlNode parent) => AddChildElement(parent, Tokens.XamlImage);
 
@@ -197,11 +201,11 @@ namespace Restless.Converters
             return childElement;
         }
 
-        public static XmlText AddChildText(this XmlElement parent, string text)
+        public static XmlElement AddChildText(this XmlElement parent, string text)
         {
             XmlText child = parent.GetCreator().CreateTextNode(text);
             parent.AppendChild(child);
-            return child;
+            return parent;
         }
 
         public static void SetColumnSpan(this XmlElement cell, HtmlNode node, int maxColSpan)
@@ -266,6 +270,9 @@ namespace Restless.Converters
 
 
         public static bool IsNamed(this XmlNode node, string name) => node.Name == name;
+
+        public static bool AcceptsParagraph(this XmlNode node) => Tokens.AcceptsParagraph.Contains(node.Name);
+        public static bool AcceptsInline(this XmlNode node) => Tokens.AcceptsInline.Contains(node.Name);
         #endregion
 
         /************************************************************************/

@@ -204,17 +204,17 @@ namespace Restless.Converters
             }
         }
 
-        private void ProcessTextNode(HtmlNode node, XmlElement parent)
+        private static void ProcessTextNode(HtmlNode node, XmlElement parent)
         {
             if (!node.IsEmptyText())
             {
-                if (parent.IsNamed(Tokens.XamlSection))
-                {
-                    ProcessParagraphElement(node, parent);
-                }
-                else
+                if (parent.AcceptsText())
                 {
                     parent.AddChildText(node.GetCleanInnerText());
+                }
+                else if (parent.AcceptsParagraph())
+                {
+                    parent.AddParagraphElement().AddChildText(node.GetCleanInnerText());
                 }
             }
         }
@@ -225,17 +225,19 @@ namespace Restless.Converters
         #region Private methods (Section, paragraph, inline)
         private void ProcessSectionElement(HtmlNode node, XmlElement parent)
         {
-            if (node.HasOnlyText())
+            if (parent.AcceptsSection())
             {
-                XmlElement para = parent.AddParagraphElement();
-                ApplyBlockConfig(node, para);
-                para.AddChildText(node.GetCleanInnerText());
-            }
-            else
-            {
-                XmlElement section = parent.AddSectionElement();
-                section.ApplyBlockConfig(Options.SectionConfig);
-                WalkNodes(node, section);
+                if (node.HasOnlyText())
+                {
+                    XmlElement paragraph = parent.AddParagraphElement().AddChildText(node.GetCleanInnerText());
+                    ApplyBlockConfig(node, paragraph);
+                }
+                else
+                {
+                    XmlElement section = parent.AddSectionElement();
+                    section.ApplyBlockConfig(Options.SectionConfig);
+                    WalkNodes(node, section);
+                }
             }
         }
 
@@ -254,39 +256,44 @@ namespace Restless.Converters
                     WalkNodes(node, paragraph);
                 }
             }
-
-            //if (parent.IsNamed(Tokens.XamlParagraph))
-            //{
-            //    ProcessInlineElement(node, parent);
-            //}
         }
 
         private void ProcessInlineElement(HtmlNode node, XmlElement parent)
         {
             if (parent.AcceptsInline())
             {
-                switch (node.Name)
-                {
-                    case Tokens.HtmlAnchor:
-                        parent.AddHyperlinkElement().SetNavigateUri(node).AddChildText(node.GetCleanDirectInnerText());
-                        break;
-                    case Tokens.HtmlBold:
-                    case Tokens.HtmlStrong:
-                        XmlElement bold = parent.AddBoldElement();
-                        WalkNodes(node, bold);
-                        break;
-                    case Tokens.HtmlItalic:
-                    case Tokens.HtmlEmphasis:
-                        XmlElement italic = parent.AddItalicElement();
-                        WalkNodes(node, italic);
-                        break;
-                    case Tokens.HtmlSpan:
-                        XmlElement span = parent.AddSpanElement();
-                        WalkNodes(node, span);
-                        break;
-                    default:
-                        break;
-                }
+                ProcessAcceptedInlineElement(node, parent);
+            }
+            else if (parent.AcceptsParagraph())
+            {
+                XmlElement paragraph = parent.AddParagraphElement();
+                ProcessAcceptedInlineElement(node, paragraph);
+            }
+        }
+
+        private void ProcessAcceptedInlineElement(HtmlNode node, XmlElement parent)
+        {
+            switch (node.Name)
+            {
+                case Tokens.HtmlAnchor:
+                    parent.AddHyperlinkElement().SetNavigateUri(node).AddChildText(node.GetCleanInnerText());
+                    break;
+                case Tokens.HtmlBold:
+                case Tokens.HtmlStrong:
+                    XmlElement bold = parent.AddBoldElement();
+                    WalkNodes(node, bold);
+                    break;
+                case Tokens.HtmlItalic:
+                case Tokens.HtmlEmphasis:
+                    XmlElement italic = parent.AddItalicElement();
+                    WalkNodes(node, italic);
+                    break;
+                case Tokens.HtmlSpan:
+                    XmlElement span = parent.AddSpanElement();
+                    WalkNodes(node, span);
+                    break;
+                default:
+                    break;
             }
         }
         #endregion
@@ -304,11 +311,19 @@ namespace Restless.Converters
             }
         }
 
-        private static void ProcessListItemElement(HtmlNode node, XmlElement parent)
+        private void ProcessListItemElement(HtmlNode node, XmlElement parent)
         {
             if (parent.IsNamed(Tokens.XamlList))
             {
-                parent.AddListItemElement().AddParagraphElement().AddChildText(node.GetCleanInnerText());
+                XmlElement listItem = parent.AddListItemElement();
+                if (node.HasOnlyText())
+                {
+                    listItem.AddParagraphElement().AddChildText(node.GetCleanInnerText());
+                }
+                else
+                {
+                    WalkNodes(node, listItem);
+                }
             }
         }
         #endregion

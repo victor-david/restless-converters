@@ -202,6 +202,8 @@ namespace Restless.Converters
                 case HtmlElementType.Table:
                     ProcessTableElement(node, parent);
                     break;
+                case HtmlElementType.TableItem:
+                    break;
                 case HtmlElementType.Image:
                     ProcessImageElement(node, parent);
                     break;
@@ -340,7 +342,7 @@ namespace Restless.Converters
         #region Private methods (Table)
         private void ProcessTableElement(HtmlNode node, XmlElement parent)
         {
-            if (node.Name == Tokens.HtmlTable && parent.IsNamed(Tokens.XamlSection))
+            if (parent.AcceptsTable())
             {
                 ProcessTable(node, parent);
             }
@@ -378,13 +380,20 @@ namespace Restless.Converters
                     XmlElement tableRow = tableRowGroup.AddTableRowElement();
                     foreach (HtmlNode dNode in rowNode.Descendants())
                     {
-                        if (dNode.Name == Tokens.HtmlTableHeadCell || dNode.Name == Tokens.HtmlTableCell)
+                        if (dNode.IsTableCell())
                         {
                             XmlElement cell = tableRow.AddTableCellElement();
                             ApplyBlockConfig(dNode, cell);
                             cell.SetColumnSpan(dNode, colCount);
                             cell.SetRowSpan(dNode, rowCount);
-                            cell.AddParagraphElement().AddChildText(dNode.GetCleanInnerText());
+                            if (dNode.HasOnlyText())
+                            {
+                                cell.AddParagraphElement().AddChildText(dNode.GetCleanInnerText());
+                            }
+                            else
+                            {
+                                WalkNodes(dNode, cell);
+                            }
                         }
                     }
                 }

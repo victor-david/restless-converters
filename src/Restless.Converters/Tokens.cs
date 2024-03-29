@@ -7,13 +7,16 @@
         internal static readonly string[] InlineElements = { "b", "strong", "i", "em", "span", "a" };
         internal static readonly string[] ListElements = { "ul", "ol" };
         internal static readonly string[] ListItemElements = { "li" };
-        internal static readonly string[] TableElements = { "table", "thead", "tbody", "tfooter", "tr", "th", "td" };
+        internal static readonly string[] TableElements = { "table" };
+        internal static readonly string[] TableItemElements = { "thead", "tbody", "tfooter", "tr", "th", "td" };
+
         internal static readonly string[] IgnoredElements = { "head", "meta", "link", "script", "nav", "button" };
 
         internal static readonly string[] ImageElements = { "img" };
 
         internal static readonly string[] AcceptsSection = { XamlFlowDocument, XamlSection };
-        internal static readonly string[] AcceptsParagraph = { XamlSection, XamlListItem };
+        internal static readonly string[] AcceptsParagraph = { XamlSection, XamlListItem, XamlTableCell };
+        internal static readonly string[] AcceptsTable = { XamlSection };
         internal static readonly string[] AcceptsList = { XamlSection };
         internal static readonly string[] AcceptsListItem = { XamlList };
         internal static readonly string[] AcceptsInline = { XamlParagraph, XamlSpan, XamlRun, XamlBold, XamlItalic };

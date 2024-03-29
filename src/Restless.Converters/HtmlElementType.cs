@@ -30,9 +30,13 @@
         /// </summary>
         ListItem,
         /// <summary>
-        /// The element is one of various table types, table, thead, tbody, tr,th, td, etc.
+        /// The element is a table, table
         /// </summary>
         Table,
+        /// <summary>
+        /// The element is one of various table item types, thead, tbody, tr, th, td, etc.
+        /// </summary>
+        TableItem,
         /// <summary>
         /// The element is an image type
         /// </summary>

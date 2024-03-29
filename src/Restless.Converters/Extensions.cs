@@ -38,11 +38,14 @@ namespace Restless.Converters
             {
                 return HtmlElementType.Table;
             }
+            if (Tokens.TableItemElements.Contains(node.Name))
+            {
+                return HtmlElementType.TableItem;
+            }
             if (Tokens.ImageElements.Contains(node.Name))
             {
                 return HtmlElementType.Image;
             }
-
             if (Tokens.IgnoredElements.Contains(node.Name))
             {
                 return HtmlElementType.Ignore;
@@ -80,6 +83,8 @@ namespace Restless.Converters
 
         public static string GetCleanInnerText(this HtmlNode node) => node.InnerText.Replace("&nbsp;", " ");
         public static string GetCleanDirectInnerText(this HtmlNode node) => node.GetDirectInnerText().Replace("&nbsp;", " ");
+
+        public static bool IsTableCell(this HtmlNode node) => node.Name == Tokens.HtmlTableHeadCell || node.Name == Tokens.HtmlTableCell;
 
         /// <summary>
         /// Removes all comment nodes from the parent and all its descendants
@@ -209,6 +214,12 @@ namespace Restless.Converters
             return parent;
         }
 
+        /// <summary>
+        /// Sets the column span attribute on the cell element if the node specifies it.
+        /// </summary>
+        /// <param name="cell">The xaml cell element</param>
+        /// <param name="node">The node</param>
+        /// <param name="maxColSpan">The maximum column span to set</param>
         public static void SetColumnSpan(this XmlElement cell, HtmlNode node, int maxColSpan)
         {
             if (cell.IsNamed(Tokens.XamlTableCell) && node.Attributes[Tokens.HtmlTableColSpan] is HtmlAttribute attrib)
@@ -221,6 +232,12 @@ namespace Restless.Converters
             }
         }
 
+        /// <summary>
+        /// Sets the row span attribute on the cell element if the node specifies it.
+        /// </summary>
+        /// <param name="cell">The xaml cell element</param>
+        /// <param name="node">The node</param>
+        /// <param name="maxRowSpan">The maximum row span to set</param>
         public static void SetRowSpan(this XmlElement cell, HtmlNode node, int maxRowSpan)
         {
             if (cell.IsNamed(Tokens.XamlTableCell) && node.Attributes[Tokens.HtmlTableRowSpan] is HtmlAttribute attrib)
@@ -274,6 +291,7 @@ namespace Restless.Converters
 
         public static bool AcceptsSection(this XmlNode node) => Tokens.AcceptsSection.Contains(node.Name);
         public static bool AcceptsParagraph(this XmlNode node) => Tokens.AcceptsParagraph.Contains(node.Name);
+        public static bool AcceptsTable(this XmlNode node) => Tokens.AcceptsTable.Contains(node.Name);
         public static bool AcceptsList(this XmlNode node) => Tokens.AcceptsList.Contains(node.Name);
         public static bool AcceptsListItem(this XmlNode node) => Tokens.AcceptsListItem.Contains(node.Name);
         public static bool AcceptsInline(this XmlNode node) => Tokens.AcceptsInline.Contains(node.Name);

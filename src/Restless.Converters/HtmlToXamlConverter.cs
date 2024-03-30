@@ -1,7 +1,5 @@
 ﻿using HtmlAgilityPack;
 using System;
-using System.Diagnostics;
-using System.Linq;
 using System.Text;
 using System.Windows.Media;
 using System.Xml;
@@ -416,8 +414,6 @@ namespace Restless.Converters
         {
             if (node.GetImageSource() is string imgSource)
             {
-
-                Debug.WriteLine($"Have img source, parent is: {parent.Name}");
                 imgSource = GetCompleteImageSource(imgSource);
 
                 if (parent.AcceptsImage())

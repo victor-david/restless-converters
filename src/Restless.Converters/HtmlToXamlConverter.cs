@@ -1,5 +1,6 @@
 ﻿using HtmlAgilityPack;
 using System;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Windows.Media;
@@ -58,7 +59,6 @@ namespace Restless.Converters
             return new HtmlToXamlConverter(options);
         }
 
-
         /// <summary>
         /// Initializes a new instance of the <see cref="HtmlToXamlConverter"/> class
         /// </summary>
@@ -110,7 +110,7 @@ namespace Restless.Converters
         }
 
         /// <summary>
-        /// Converts the html specified in the constructor
+        /// Converts the html that was specified in the <see cref="SetHtml(string)"/> method.
         /// </summary>
         /// <returns>A XAML string</returns>
         /// <exception cref="ArgumentException">
@@ -123,8 +123,16 @@ namespace Restless.Converters
             XmlDocument xamlDoc = new();
             HtmlDocument htmlDoc = new();
 
-            XmlElement xamlTopElement = xamlDoc.AddSectionElement();
-            xamlTopElement.ApplyBlockConfig(Options.SectionConfig);
+            XmlElement xamlTopElement = Options.IsTopLevelFlowDocument ? xamlDoc.AddFlowDocumentElement() : xamlDoc.AddSectionElement();
+            if (xamlTopElement.IsNamed(XamlSchema.XamlSection))
+            {
+                xamlTopElement.ApplyBlockConfig(Options.SectionConfig);
+            }
+
+            if (Options.SetPreserve)
+            {
+                xamlTopElement.SetPreserveSpace();
+            }
 
             htmlDoc.LoadHtml(Html);
             htmlDoc.DocumentNode.RemoveAllCommentNodes();
@@ -134,12 +142,13 @@ namespace Restless.Converters
 
             HtmlNode startNode = htmlDoc.DocumentNode.SelectSingleNode("//body") ?? htmlDoc.DocumentNode;
 
-            WalkNodes(startNode, xamlTopElement);
-
-            if (Options.SetPreserve)
+            if (xamlTopElement.IsNamed(XamlSchema.XamlFlowDocument) && startNode.FirstChild?.GetHtmlElementType() != HtmlElementType.Section)
             {
-                xamlTopElement.SetAttribute("xml:space", "preserve");
+                xamlTopElement = xamlTopElement.AddSectionElement();
+                xamlTopElement.ApplyBlockConfig(Options.SectionConfig);
             }
+
+            WalkNodes(startNode, xamlTopElement);
 
             XmlWriterSettings xmlWriterSettings = new()
             {
@@ -194,6 +203,9 @@ namespace Restless.Converters
                 case HtmlElementType.Table:
                     ProcessTableElement(node, parent);
                     break;
+                case HtmlElementType.TableItem:
+                    ProcessTableItemElement(node, parent);
+                    break;
                 case HtmlElementType.Image:
                     ProcessImageElement(node, parent);
                     break;
@@ -203,20 +215,17 @@ namespace Restless.Converters
             }
         }
 
-        private void ProcessTextNode(HtmlNode node, XmlElement parent)
+        private static void ProcessTextNode(HtmlNode node, XmlElement parent)
         {
-            if (!node.IsEmptyText())
+            if (parent.AcceptsText())
             {
-                if (parent.IsNamed(Tokens.XamlParagraph))
-                {
-                    parent.AddChildText(node.GetCleanInnerText());
-                }
-
-                if (parent.IsNamed(Tokens.XamlSection))
-                {
-                    ProcessParagraphElement(node, parent);
-                }
+                parent.AddChildText(node.GetCleanInnerText());
             }
+            else if (parent.AcceptsParagraph())
+            {
+                parent.AddParagraphElement().AddChildText(node.GetCleanInnerText());
+            }
+
         }
         #endregion
 
@@ -225,23 +234,25 @@ namespace Restless.Converters
         #region Private methods (Section, paragraph, inline)
         private void ProcessSectionElement(HtmlNode node, XmlElement parent)
         {
-            if (node.HasOnlyText())
+            if (parent.AcceptsSection())
             {
-                XmlElement para = parent.AddParagraphElement();
-                ApplyBlockConfig(node, para);
-                para.AddChildText(node.GetCleanInnerText());
-            }
-            else
-            {
-                XmlElement section = parent.AddSectionElement();
-                section.ApplyBlockConfig(Options.SectionConfig);
-                WalkNodes(node, section);
+                if (node.HasOnlyText())
+                {
+                    XmlElement paragraph = parent.AddParagraphElement().AddChildText(node.GetCleanInnerText());
+                    ApplyBlockConfig(node, paragraph);
+                }
+                else
+                {
+                    XmlElement section = parent.AddSectionElement();
+                    section.ApplyBlockConfig(Options.SectionConfig);
+                    WalkNodes(node, section);
+                }
             }
         }
 
         private void ProcessParagraphElement(HtmlNode node, XmlElement parent)
         {
-            if (parent.IsNamed(Tokens.XamlSection))
+            if (parent.AcceptsParagraph())
             {
                 XmlElement paragraph = parent.AddParagraphElement();
                 ApplyBlockConfig(node, paragraph);
@@ -254,33 +265,45 @@ namespace Restless.Converters
                     WalkNodes(node, paragraph);
                 }
             }
+        }
 
-            if (parent.IsNamed(Tokens.XamlParagraph))
+        private void ProcessInlineElement(HtmlNode node, XmlElement parent)
+        {
+            if (parent.AcceptsInline())
             {
-                ProcessInlineElement(node, parent);
+                ProcessAcceptedInlineElement(node, parent);
+            }
+            else if (parent.AcceptsParagraph())
+            {
+                XmlElement paragraph = parent.AddParagraphElement();
+                ProcessAcceptedInlineElement(node, paragraph);
             }
         }
 
-        private static void ProcessInlineElement(HtmlNode node, XmlElement parent)
+        private void ProcessAcceptedInlineElement(HtmlNode node, XmlElement parent)
         {
-            if (parent.IsNamed(Tokens.XamlParagraph))
+            switch (node.Name)
             {
-                switch (node.Name)
-                {
-                    case Tokens.HtmlAnchor:
-                        parent.AddHyperlinkElement().SetNavigateUri(node).AddChildText(node.GetCleanInnerText());
-                        break;
-                    case Tokens.HtmlBold:
-                    case Tokens.HtmlStrong:
-                        parent.AddRunElement().SetBold().AddChildText(node.GetCleanInnerText());
-                        break;
-                    case Tokens.HtmlItalic:
-                    case Tokens.HtmlEmphasis:
-                        parent.AddRunElement().SetItalic().AddChildText(node.GetCleanInnerText());
-                        break;
-                    default:
-                        break;
-                }
+                case HtmlSchema.HtmlAnchor:
+                    XmlElement link = parent.AddHyperlinkElement().SetNavigateUri(node);
+                    WalkNodes(node, link);
+                    break;
+                case HtmlSchema.HtmlBold:
+                case HtmlSchema.HtmlStrong:
+                    XmlElement bold = parent.AddBoldElement();
+                    WalkNodes(node, bold);
+                    break;
+                case HtmlSchema.HtmlItalic:
+                case HtmlSchema.HtmlEmphasis:
+                    XmlElement italic = parent.AddItalicElement();
+                    WalkNodes(node, italic);
+                    break;
+                case HtmlSchema.HtmlSpan:
+                    XmlElement span = parent.AddSpanElement();
+                    WalkNodes(node, span);
+                    break;
+                default:
+                    break;
             }
         }
         #endregion
@@ -290,7 +313,7 @@ namespace Restless.Converters
         #region Private methods (List)
         private void ProcessListElement(HtmlNode node, XmlElement parent)
         {
-            if (parent.IsNamed(Tokens.XamlSection))
+            if (parent.AcceptsList())
             {
                 XmlElement list = parent.AddListElement().AddListMarkerStyle(node.Name);
                 ApplyBlockConfig(node, list);
@@ -300,10 +323,17 @@ namespace Restless.Converters
 
         private void ProcessListItemElement(HtmlNode node, XmlElement parent)
         {
-            if (parent.IsNamed(Tokens.XamlList))
+            if (parent.AcceptsListItem())
             {
-                XmlElement listItemParagraph = parent.AddListItemElement().AddParagraphElement();
-                WalkNodes(node, listItemParagraph);
+                XmlElement listItem = parent.AddListItemElement();
+                if (node.HasOnlyText())
+                {
+                    listItem.AddParagraphElement().AddChildText(node.GetCleanInnerText());
+                }
+                else
+                {
+                    WalkNodes(node, listItem);
+                }
             }
         }
         #endregion
@@ -311,56 +341,70 @@ namespace Restless.Converters
         /************************************************************************/
 
         #region Private methods (Table)
-        private void ProcessTableElement(HtmlNode node, XmlElement parent)
-        {
-            if (node.Name == Tokens.HtmlTable && parent.IsNamed(Tokens.XamlSection))
-            {
-                ProcessTable(node, parent);
-            }
-        }
-
         /// <summary>
         /// https://learn.microsoft.com/en-us/dotnet/desktop/wpf/advanced/how-to-define-a-table-with-xaml?view=netframeworkdesktop-4.8
         /// </summary>
-        private void ProcessTable(HtmlNode node, XmlElement parent)
+        private void ProcessTableElement(HtmlNode node, XmlElement parent)
         {
-            int colCount = 0;
-            int rowCount = 0;
-            foreach (HtmlNode row in node.Descendants(Tokens.HtmlTableRow))
-            {
-                rowCount++;
-                colCount = Math.Max(colCount, row.Descendants(Tokens.HtmlTableHeadCell).Count());
-                colCount = Math.Max(colCount, row.Descendants(Tokens.HtmlTableCell).Count());
-            }
-
-            if (colCount > 0)
+            if (parent.AcceptsTable())
             {
                 XmlElement table = parent.AddTableElement();
                 ApplyBlockConfig(node, table);
+                WalkNodes(node, table);
+            }
+        }
 
-                XmlElement columnGroup = table.AddTableColumnGroupElement();
-                for (int k = 0; k < colCount; k++)
-                {
-                    columnGroup.AddTableColumnElement();
-                }
+        private void ProcessTableItemElement(HtmlNode node, XmlElement parent)
+        {
+            switch (node.Name)
+            {
+                case HtmlSchema.HtmlTableHead:
+                case HtmlSchema.HtmlTableBody:
+                case HtmlSchema.HtmlTableFooter:
+                    ProcessTableRowGroupElement(node, parent);
+                    break;
+                case HtmlSchema.HtmlTableRow:
+                    ProcessTableRowElement(node, parent);
+                    break;
+                case HtmlSchema.HtmlTableHeadCell:
+                case HtmlSchema.HtmlTableCell:
+                    ProcessTableCellElement(node, parent);
+                    break;
+            }
+        }
 
-                XmlElement tableRowGroup = table.AddTableRowGroupElement();
+        private void ProcessTableRowGroupElement(HtmlNode node, XmlElement parent)
+        {
+            if (parent.AcceptsTableRowGroup())
+            {
+                XmlElement tableRowGroup = parent.AddTableRowGroupElement();
+                WalkNodes(node, tableRowGroup);
+            }
+        }
 
-                foreach (HtmlNode rowNode in node.Descendants(Tokens.HtmlTableRow))
-                {
-                    XmlElement tableRow = tableRowGroup.AddTableRowElement();
-                    foreach (HtmlNode dNode in rowNode.Descendants())
-                    {
-                        if (dNode.Name == Tokens.HtmlTableHeadCell || dNode.Name == Tokens.HtmlTableCell)
-                        {
-                            XmlElement cell = tableRow.AddTableCellElement();
-                            ApplyBlockConfig(dNode, cell);
-                            cell.SetColumnSpan(dNode, colCount);
-                            cell.SetRowSpan(dNode, rowCount);
-                            cell.AddParagraphElement().AddChildText(dNode.GetCleanInnerText());
-                        }
-                    }
-                }
+        private void ProcessTableRowElement(HtmlNode node, XmlElement parent)
+        {
+            if (parent.AcceptsTableRow())
+            {
+                XmlElement tableRow = parent.AddTableRowElement();
+                WalkNodes(node, tableRow);
+            }
+            else if (parent.AcceptsTableRowGroup())
+            {
+                XmlElement tableRow = parent.AddTableRowGroupElement().AddTableRowElement();
+                WalkNodes(node, tableRow);
+            }
+        }
+
+        private void ProcessTableCellElement(HtmlNode node, XmlElement parent)
+        {
+            if (parent.AcceptsTableCell())
+            {
+                XmlElement tableCell = parent.AddTableCellElement();
+                ApplyBlockConfig(node, tableCell);
+                tableCell.SetColumnSpan(node);
+                tableCell.SetRowSpan(node);
+                WalkNodes(node, tableCell);
             }
         }
         #endregion
@@ -370,16 +414,17 @@ namespace Restless.Converters
         #region Private methods (image)
         private void ProcessImageElement(HtmlNode node, XmlElement parent)
         {
-            if (node.Attributes[Tokens.HtmlSource] is HtmlAttribute attrib)
+            if (node.GetImageSource() is string imgSource)
             {
-                string imgSource = GetCompleteImageSource(attrib.Value);
 
-                if (parent.IsNamed(Tokens.XamlParagraph))
+                Debug.WriteLine($"Have img source, parent is: {parent.Name}");
+                imgSource = GetCompleteImageSource(imgSource);
+
+                if (parent.AcceptsImage())
                 {
                     parent.AddImageElement().SetSource(imgSource);
                 }
-
-                if (parent.IsNamed(Tokens.XamlSection))
+                else if (parent.AcceptsParagraph())
                 {
                     XmlElement paragraph = parent.AddParagraphElement();
                     ApplyBlockConfig(node, paragraph);
@@ -410,12 +455,12 @@ namespace Restless.Converters
         {
             if (Options.ProcessUnknown)
             {
-                if (parent.IsNamed(Tokens.XamlParagraph))
+                if (parent.IsNamed(XamlSchema.XamlParagraph))
                 {
                     AddUnknownToParagraph(node, parent);
                 }
 
-                if (parent.IsNamed(Tokens.XamlSection))
+                if (parent.IsNamed(XamlSchema.XamlSection))
                 {
                     AddUnknownToParagraph(node, parent.AddParagraphElement());
                 }
@@ -446,7 +491,7 @@ namespace Restless.Converters
 
         private static string GetSiteBase(HtmlNode baseNode)
         {
-            if (baseNode != null && baseNode.Attributes[Tokens.HtmlHref] is HtmlAttribute attrib)
+            if (baseNode != null && baseNode.Attributes[HtmlSchema.HtmlHref] is HtmlAttribute attrib)
             {
                 string baseStr = attrib.Value;
                 if (!baseStr.EndsWith("/"))

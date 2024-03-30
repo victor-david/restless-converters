@@ -108,7 +108,7 @@ namespace Restless.Converters
             Add(new BlockConfig("h3", 18, FontWeights.Bold));
             Add(new BlockConfig("h4", 14, FontWeights.Bold));
 
-            Add(new BlockConfig(Tokens.HtmlUnorderedList, 24)
+            Add(new BlockConfig(HtmlSchema.HtmlUnorderedList, 24)
             {
                 BorderBrush = Brushes.Green,
                 BorderThickness = new Thickness(3),
@@ -116,19 +116,19 @@ namespace Restless.Converters
 
             });
 
-            Add(new BlockConfig(Tokens.HtmlOrderedList, 24)
+            Add(new BlockConfig(HtmlSchema.HtmlOrderedList, 24)
             {
                 BorderBrush = Brushes.Blue,
                 BorderThickness = new Thickness(3),
                 Padding = new Thickness(50, 3, 3, 3)
             });
 
-            Add(new BlockConfig(Tokens.HtmlTable)
+            Add(new BlockConfig(HtmlSchema.HtmlTable)
             {
                 Spacing = 8,
             });
 
-            Add(new BlockConfig(Tokens.HtmlTableHeadCell)
+            Add(new BlockConfig(HtmlSchema.HtmlTableHeadCell)
             {
                 BorderBrush = Brushes.LightGray,
                 BorderThickness = new Thickness(1),
@@ -136,7 +136,7 @@ namespace Restless.Converters
                 Padding = new Thickness(5)
             });
 
-            Add(new BlockConfig(Tokens.HtmlTableCell)
+            Add(new BlockConfig(HtmlSchema.HtmlTableCell)
             {
                 BorderBrush = Brushes.LightGray,
                 BorderThickness = new Thickness(1),

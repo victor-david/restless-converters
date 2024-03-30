@@ -2,6 +2,8 @@
 using System.Diagnostics;
 using System.IO;
 using System.Text;
+using System.Text.Json;
+using System.Text.Json.Serialization;
 using System.Windows;
 using System.Windows.Documents;
 using System.Windows.Media;
@@ -13,8 +15,8 @@ namespace Restless.Converters.Demo
     /// </summary>
     public partial class MainWindow : Window
     {
-        private const string LoadFileName = @"D:\Development\Visual_Studio\Projects\Restless.Converters\.docs\site.full.html";
-        private const string SaveFileName = @"D:\Development\Visual_Studio\Projects\Restless.Converters\.docs\rich.flow.xaml";
+        private TestConfiguration testConfig;
+        private const string JsonFileName = @"D:\Development\Visual_Studio\Projects\Restless.Converters\.docs\test.files.json";
         private static readonly string DataFormat = DataFormats.XamlPackage;
 
         public MainWindow()
@@ -23,6 +25,7 @@ namespace Restless.Converters.Demo
             PasteHandler.Register(Rich);
             PasteHandler.Register(TextBoxHtml, new PasteHandlerOptions(HtmlPasteAction.ConvertToText));
             AddHandler(Hyperlink.RequestNavigateEvent, new RoutedEventHandler(OnNavigationRequest));
+            LoadTestConfiguration();
         }
 
         private void OnNavigationRequest(object sender, RoutedEventArgs e)
@@ -39,35 +42,42 @@ namespace Restless.Converters.Demo
 
         private void ButtonSaveRichTextClick(object sender, RoutedEventArgs e)
         {
-            SaveRichTextBoxToFile(SaveFileName);
+            if (testConfig?.SaveFile is string saveFile)
+            {
+                SaveRichTextBoxToFile(saveFile);
+            }
         }
 
         private void ButtonLoadRichTextClick(object sender, RoutedEventArgs e)
         {
-            LoadRichTextBoxFromFile(SaveFileName);
+            if (testConfig?.SaveFile is string saveFile)
+            {
+                if (File.Exists(saveFile))
+                {
+                    LoadRichTextBoxFromFile(saveFile);
+                }
+                else
+                {
+                    Rich.AppendText("File not found");
+                }
+            }
         }
 
         private void LoadRichTextBoxFromFile(string fileName)
         {
-            if (File.Exists(fileName))
+            try
             {
-                try
+                using (FileStream fileStream = new(fileName, FileMode.OpenOrCreate))
                 {
-                    using (FileStream fileStream = new(fileName, FileMode.OpenOrCreate))
-                    {
-                        TextRange range = new(Rich.Document.ContentStart, Rich.Document.ContentEnd);
-                        range.Load(fileStream, DataFormat);
-                    }
-                }
-                catch (Exception)
-                {
-                    Rich.AppendText("File is not right format or is corrupted");
+                    TextRange range = new(Rich.Document.ContentStart, Rich.Document.ContentEnd);
+                    range.Load(fileStream, DataFormat);
                 }
             }
-            else
+            catch (Exception)
             {
-                Rich.AppendText("File not found");
+                Rich.AppendText("File is not right format or is corrupted");
             }
+
         }
         private void SaveRichTextBoxToFile(string fileName)
         {
@@ -78,12 +88,20 @@ namespace Restless.Converters.Demo
             }
         }
 
-
         private void ButtonLoadHtmlClick(object sender, RoutedEventArgs e)
         {
-            if (File.Exists(LoadFileName))
+            if (testConfig?.LoadFile is string loadFile)
             {
-                TextBoxHtml.Text = File.ReadAllText(LoadFileName);
+                if (File.Exists(loadFile))
+                {
+                    TextBoxHtml.Text = File.ReadAllText(loadFile);
+                }
+                else
+                {
+                    TextBoxHtml.Text = $"{loadFile} - File not found";
+                }
+
+
             }
         }
 
@@ -135,6 +153,24 @@ namespace Restless.Converters.Demo
         private void ButtonClearHtmlClick(object sender, RoutedEventArgs e)
         {
             TextBoxHtml.Clear();
+        }
+
+        private void LoadTestConfiguration()
+        {
+            if (File.Exists(JsonFileName))
+            {
+                string json = File.ReadAllText(JsonFileName);
+                testConfig = JsonSerializer.Deserialize<TestConfiguration>(json);
+            }
+        }
+
+        private class TestConfiguration
+        {
+            [JsonPropertyName("loadfile")]
+            public string LoadFile { get; set; }
+
+            [JsonPropertyName("savefile")]
+            public string SaveFile { get; set; }
         }
     }
 }

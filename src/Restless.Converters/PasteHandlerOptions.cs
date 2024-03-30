@@ -56,6 +56,17 @@ namespace Restless.Converters
             get => maxImageDimenison;
             set => maxImageDimenison = Math.Clamp(value, MinMaxImagePasteSize, MaxMaxImagePasteSize);
         }
+
+        /// <summary>
+        /// Gets or sets a value that determines whether an incoming fragment
+        /// that ends with a span tag should be wrapped in a div.
+        /// The default is false.
+        /// </summary>
+        public bool WrapPartialFragment
+        {
+            get;
+            set;
+        }
         #endregion
 
         /************************************************************************/
@@ -77,6 +88,7 @@ namespace Restless.Converters
         {
             HtmlPasteAction = pasteAction;
             MaxImageDimension = DefaultMaxImagePasteSize;
+            WrapPartialFragment = false;
         }
         #endregion
     }

@@ -9,6 +9,18 @@
         public const string SectionBlockId = "section";
 
         /// <summary>
+        /// Gets or sets a value that determines if the top level
+        /// element is a Flow Document.
+        /// </summary>
+        /// <remarks>
+        /// When this property is true, the top level element of the output
+        /// is a flow document. When false, the top level element is a section.
+        /// The default is false. If you're going to place the output into
+        /// a RichTextBox, this property should be left at its default.
+        /// </remarks>
+        public bool IsTopLevelFlowDocument { get; set; }
+
+        /// <summary>
         /// Gets the block config to apply to sections
         /// </summary>
         public BlockConfig SectionConfig { get; }
@@ -46,6 +58,7 @@
         /// </summary>
         public ConverterOptions()
         {
+            IsTopLevelFlowDocument = false;
             SetPreserve = false;
             IsOutputIndented = false;
             AddDefaultBlockConfigs = true;

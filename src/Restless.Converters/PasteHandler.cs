@@ -144,14 +144,14 @@ namespace Restless.Converters
         {
             if (Options.WrapPartialFragment && item.Fragment.EndsWith("</span>", StringComparison.InvariantCultureIgnoreCase))
             {
-                return $"<p>{item.Fragment}</p>";
+                return $"<div>{item.Fragment}</div>";
             }
             return item.Fragment;
         }
 
         private static string GetSourceAttribution(HtmlPasteItem item)
         {
-            if (item.HasSourceUrl && !item.SourceUrl.StartsWith("about:"))
+            if (item.HasSourceUrl && item.SourceUrl.IsValidUri())
             {
                 return $"<p>Pasted from <a href=\"{item.SourceUrl}\">{item.SourceUrl}</a></p>";
             }

@@ -21,22 +21,22 @@ You can also supply an optional **ConverterOptions** object
 string html = GetHtml();
 string xaml = HtmlToXamlConverter.Create(new ConverterOptions()
 {
-    AddDefaultBlockConfigs = true,
-    IsOutputIndented = true,
-    SetPreserve = false
+    AddDefaultBlockConfigs = false,
+    IsOutputIndented = true
 }) .SetHtml(html).Convert();
 ```
 
 ## Converter Options
 Converter options affect how the xaml is generated.
 
-| Property | Type | Description |
-| --- | --- | --- |
-| SectionConfig | BlockConfig | Provides access to the configuration that is applied to Xaml Section nodes |
-| AddDefaultBlockConfigs | bool | Determines whether default block configurations are applied. Defaults include settings for **H1**, **H2**, **UL**, **OL**, and others. You can change any defaults before conversion or supply your own, or both. |
-| ProcessUnknown | bool | Determines whether unknown nodes are processed. When an unknown node is processed, it appears in the xaml with its name and inner text. The default is **false**. Mostly a debugging aide. |
-| SetPreserve | bool | Determines whether the xaml output has **xml:space preserve** added. The default is **false**. |
-| IsOutputIndented | bool | Determines whether xaml output is indented. When **false**, xaml is all on one long line. When **true**, the xaml is broken up into lines, indented, and easier to read. The default is **false**. |
+| Property | Type | Default | Description |
+| --- | --- | --- | --- |
+| IsTopLevelFlowDocument | bool | **false** | When this property is true, the top level element of the output is a flow document. When false, the top level element is a section. If you're going to place the output into a RichTextBox, this property should be left at its default.|
+| SectionConfig | BlockConfig | **BlockConfig** | Provides access to the configuration that is applied to Xaml Section nodes |
+| AddDefaultBlockConfigs | bool | **true** | Determines whether default block configurations are applied. Defaults include settings for **H1**, **H2**, **UL**, **OL**, and others. You can change any defaults before conversion or supply your own, or both. |
+| ProcessUnknown | bool | **false** | Determines whether unknown nodes are processed. When an unknown node is processed, it appears in the xaml with its name and inner text. Mostly a debugging aide. |
+| SetPreserve | bool | **false** | Determines whether the xaml output has **xml:space preserve** added. |
+| IsOutputIndented | bool | **false** | Determines whether xaml output is indented. When **false**, xaml is all on one long line. When **true**, the xaml is broken up into lines, indented, and easier to read. |
 
 ## Paste Handler
 Paste handler provides a way to register controls for automatic custom paste handling. 

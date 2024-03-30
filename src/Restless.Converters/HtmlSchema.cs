@@ -114,15 +114,6 @@ namespace Restless.Converters
         internal static bool HasZeroChildren(this HtmlNode node) => node.ChildNodes.Count == 0;
 
         /// <summary>
-        /// Gets a boolean value that indicates if the node has any children to process.
-        /// To qualify, the node must be type Element or type Text (and if type Text, not empty text)
-        /// </summary>
-        /// <param name="node">The node</param>
-        /// <returns>true if children to process; otherwise, false</returns>
-        internal static bool HasChildrenToProcess(this HtmlNode node) =>
-            node.ChildNodes.Where(c => c.NodeType == HtmlNodeType.Element || (c.NodeType == HtmlNodeType.Text && !c.IsEmptyText())).Any();
-
-        /// <summary>
         /// Gets a boolean that indicates if this node contains only text node(s)
         /// </summary>
         /// <param name="node">The node</param>

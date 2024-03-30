@@ -131,7 +131,7 @@ namespace Restless.Converters
 
             if (Options.SetPreserve)
             {
-                xamlTopElement.SetAttribute("xml:space", "preserve");
+                xamlTopElement.SetPreserveSpace();
             }
 
             htmlDoc.LoadHtml(Html);
@@ -217,17 +217,15 @@ namespace Restless.Converters
 
         private static void ProcessTextNode(HtmlNode node, XmlElement parent)
         {
-            if (!node.IsEmptyText())
+            if (parent.AcceptsText())
             {
-                if (parent.AcceptsText())
-                {
-                    parent.AddChildText(node.GetCleanInnerText());
-                }
-                else if (parent.AcceptsParagraph())
-                {
-                    parent.AddParagraphElement().AddChildText(node.GetCleanInnerText());
-                }
+                parent.AddChildText(node.GetCleanInnerText());
             }
+            else if (parent.AcceptsParagraph())
+            {
+                parent.AddParagraphElement().AddChildText(node.GetCleanInnerText());
+            }
+
         }
         #endregion
 
@@ -287,7 +285,7 @@ namespace Restless.Converters
             switch (node.Name)
             {
                 case HtmlSchema.HtmlAnchor:
-                    XmlElement link = parent.AddHyperlinkElement().SetNavigateUri(node); // .AddChildText(node.GetCleanInnerText());
+                    XmlElement link = parent.AddHyperlinkElement().SetNavigateUri(node);
                     WalkNodes(node, link);
                     break;
                 case HtmlSchema.HtmlBold:

@@ -117,6 +117,12 @@ namespace Restless.Converters
             return parent;
         }
 
+        internal static XmlElement SetPreserveSpace(this XmlElement parent)
+        {
+            parent.SetAttribute("xml:space", "preserve");
+            return parent;
+        }
+
         internal static XmlElement SetHeight(this XmlElement parent, double height)
         {
             parent.SetAttribute(XamlHeight, Math.Max(0, height).ToString());
@@ -202,42 +208,6 @@ namespace Restless.Converters
             {
                 if (int.TryParse(attrib.Value, out int result))
                 {
-                    cell.SetAttribute(XamlTableCellRowSpan, result.ToString());
-                }
-            }
-        }
-
-        /// <summary>
-        /// Sets the column span attribute on the cell element if the node specifies it.
-        /// </summary>
-        /// <param name="cell">The xaml cell element</param>
-        /// <param name="node">The node</param>
-        /// <param name="maxColSpan">The maximum column span to set</param>
-        internal static void SetColumnSpan(this XmlElement cell, HtmlNode node, int maxColSpan)
-        {
-            if (cell.IsNamed(XamlTableCell) && node.Attributes[HtmlSchema.HtmlTableColSpan] is HtmlAttribute attrib)
-            {
-                if (int.TryParse(attrib.Value, out int result))
-                {
-                    result = Math.Clamp(result, 0, maxColSpan);
-                    cell.SetAttribute(XamlTableCellColumnSpan, result.ToString());
-                }
-            }
-        }
-
-        /// <summary>
-        /// Sets the row span attribute on the cell element if the node specifies it.
-        /// </summary>
-        /// <param name="cell">The xaml cell element</param>
-        /// <param name="node">The node</param>
-        /// <param name="maxRowSpan">The maximum row span to set</param>
-        internal static void SetRowSpan(this XmlElement cell, HtmlNode node, int maxRowSpan)
-        {
-            if (cell.IsNamed(XamlTableCell) && node.Attributes[HtmlSchema.HtmlTableRowSpan] is HtmlAttribute attrib)
-            {
-                if (int.TryParse(attrib.Value, out int result))
-                {
-                    result = Math.Clamp(result, 0, maxRowSpan);
                     cell.SetAttribute(XamlTableCellRowSpan, result.ToString());
                 }
             }

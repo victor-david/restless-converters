@@ -93,7 +93,7 @@ namespace Restless.Converters
 
         private void AddDefaults()
         {
-            Add(new BlockConfig("h1", 24, FontWeights.Bold)
+            Add(new BlockConfig(HtmlSchema.HtmlHeader1, 24, FontWeights.Bold)
             {
                 Foreground = Brushes.Red,
                 BorderBrush = Brushes.DimGray,
@@ -101,12 +101,13 @@ namespace Restless.Converters
                 Padding = new Thickness(0, 0, 0, 1)
             });
 
-            Add(new BlockConfig("h2", 20, FontWeights.Bold)
+            Add(new BlockConfig(HtmlSchema.HtmlHeader2, 20, FontWeights.Bold)
             {
                 Foreground = Brushes.Green
             });
-            Add(new BlockConfig("h3", 18, FontWeights.Bold));
-            Add(new BlockConfig("h4", 14, FontWeights.Bold));
+
+            Add(new BlockConfig(HtmlSchema.HtmlHeader3, 18, FontWeights.Bold));
+            Add(new BlockConfig(HtmlSchema.HtmlHeader4, 14, FontWeights.Bold));
 
             Add(new BlockConfig(HtmlSchema.HtmlUnorderedList, 24)
             {

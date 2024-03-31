@@ -5,8 +5,10 @@ using System.Text;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 using System.Windows;
+using System.Windows.Controls;
 using System.Windows.Documents;
 using System.Windows.Media;
+using System.Windows.Media.Imaging;
 
 namespace Restless.Converters.Demo
 {
@@ -77,8 +79,8 @@ namespace Restless.Converters.Demo
             {
                 Rich.AppendText("File is not right format or is corrupted");
             }
-
         }
+
         private void SaveRichTextBoxToFile(string fileName)
         {
             using (FileStream fileStream = new(fileName, FileMode.Create))
@@ -86,6 +88,17 @@ namespace Restless.Converters.Demo
                 TextRange range = new(Rich.Document.ContentStart, Rich.Document.ContentEnd);
                 range.Save(fileStream, DataFormat);
             }
+        }
+
+        private void ButtonAdjustImagesClick(object sender, RoutedEventArgs e)
+        {
+            Rich.Document.Discover<Image>(img =>
+            {
+                if (img.Source is BitmapSource source)
+                {
+                    img.Height = source.PixelHeight;
+                }
+            });
         }
 
         private void ButtonLoadHtmlClick(object sender, RoutedEventArgs e)
@@ -100,8 +113,6 @@ namespace Restless.Converters.Demo
                 {
                     TextBoxHtml.Text = $"{loadFile} - File not found";
                 }
-
-
             }
         }
 

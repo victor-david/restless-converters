@@ -39,6 +39,7 @@
         <StackPanel Grid.Row="4" Orientation="Horizontal">
             <Button Content="Load" Click="ButtonLoadRichTextClick"/>
             <Button Content="Save" Click="ButtonSaveRichTextClick"/>
+            <Button Content="Images" Click="ButtonAdjustImagesClick" ToolTip="Sets all images in the document to their native size"/>
         </StackPanel>
 
         <StackPanel Grid.Column="2" Grid.Row="4" Orientation="Horizontal">

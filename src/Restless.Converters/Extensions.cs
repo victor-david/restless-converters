@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Windows;
+using System.Windows.Controls;
 using System.Windows.Documents;
 
 namespace Restless.Converters
@@ -62,9 +63,16 @@ namespace Restless.Converters
                     }
                 }
 
-                if (block is BlockUIContainer container && container.Child is T child)
+                if (block is BlockUIContainer container)
                 {
-                    callback(child as T);
+                    if (container.Child is T child1)
+                    {
+                        callback(child1);
+                    }
+                    if (container.Child is Decorator decorator && decorator.Child is T child2)
+                    {
+                        callback(child2);
+                    }
                 }
             }
         }
@@ -83,9 +91,16 @@ namespace Restless.Converters
                     WalkInlineCollection(span.Inlines, callback);
                 }
 
-                if (inline is InlineUIContainer container && container.Child is T child)
+                if (inline is InlineUIContainer container)
                 {
-                    callback(child as T);
+                    if (container.Child is T child1)
+                    {
+                        callback(child1);
+                    }
+                    if (container.Child is Decorator decorator && decorator.Child is T child2)
+                    {
+                        callback(child2);
+                    }
                 }
             }
         }

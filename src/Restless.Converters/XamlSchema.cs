@@ -13,6 +13,11 @@ namespace Restless.Converters
     internal static class XamlSchema
     {
         #region Element Arrays (Private)
+        private static readonly string[] UIElements = { XamlBorder };
+
+        private static readonly string[] AcceptsBlockConfigElements = { XamlBlockUIContainer, XamlList, XamlParagraph, XamlSection, XamlTable, XamlTableCell };
+
+        private static readonly string[] AcceptsBlockElements = { XamlSection, XamlListItem, XamlTableCell };
         private static readonly string[] AcceptsSectionElements = { XamlFlowDocument, XamlSection };
         private static readonly string[] AcceptsParagraphElements = { XamlSection, XamlListItem, XamlTableCell };
 
@@ -23,7 +28,7 @@ namespace Restless.Converters
 
         private static readonly string[] AcceptsListElements = { XamlSection, XamlListItem, XamlTableCell };
         private static readonly string[] AcceptsListItemElements = { XamlList };
-        private static readonly string[] AcceptsImageElements = { XamlParagraph, XamlHyperlink };
+
         private static readonly string[] AcceptsInlineElements = { XamlParagraph, XamlBold, XamlHyperlink, XamlItalic, XamlSpan, XamlUnderline };
         private static readonly string[] AcceptsTextElements = { XamlParagraph, XamlBold, XamlHyperlink, XamlItalic, XamlRun, XamlSpan, XamlUnderline };
         #endregion
@@ -42,6 +47,7 @@ namespace Restless.Converters
         internal const string XamlHyperlink = "Hyperlink";
         internal const string XamlUnderline = "Underline";
 
+        internal const string XamlBorder = "Border";
         internal const string XamlImage = "Image";
         internal const string XamlSource = "Source";
         internal const string XamlStretch = "Stretch";
@@ -67,6 +73,9 @@ namespace Restless.Converters
         internal const string XamlTableCellColumnSpan = "ColumnSpan";
         internal const string XamlTableCellRowSpan = "RowSpan";
 
+        internal const string XamlBlockUIContainer = "BlockUIContainer";
+        internal const string XamlInlineUIContainer = "InlineUIContainer";
+
         internal const string XamlHeight = "Height";
         internal const string XamlWidth = "Width";
         internal const string XamlFontSize = "FontSize";
@@ -74,6 +83,8 @@ namespace Restless.Converters
         internal const string XamlFontStyleItalic = "Italic";
         internal const string XamlFontWeight = "FontWeight";
         internal const string XamlFontWeightBold = "Bold";
+        internal const string XamlTextAlignment = "TextAlignment";
+        internal const string XamlHorizontalAlignment = "HorizontalAlignment";
         internal const string XamlBackground = "Background";
         internal const string XamlForeground = "Foreground";
         internal const string XamlBorderBrush = "BorderBrush";
@@ -94,6 +105,7 @@ namespace Restless.Converters
         internal static XmlElement AddItalicElement(this XmlNode parent) => AddChildElement(parent, XamlItalic);
 
         internal static XmlElement AddHyperlinkElement(this XmlNode parent) => AddChildElement(parent, XamlHyperlink);
+        internal static XmlElement AddBorderElement(this XmlNode parent) => AddChildElement(parent, XamlBorder);
         internal static XmlElement AddImageElement(this XmlNode parent) => AddChildElement(parent, XamlImage);
 
         internal static XmlElement AddListElement(this XmlNode parent) => AddChildElement(parent, XamlList);
@@ -105,6 +117,9 @@ namespace Restless.Converters
         internal static XmlElement AddTableRowGroupElement(this XmlNode parent) => AddChildElement(parent, XamlTableRowGroup);
         internal static XmlElement AddTableRowElement(this XmlNode parent) => AddChildElement(parent, XamlTableRow);
         internal static XmlElement AddTableCellElement(this XmlNode parent) => AddChildElement(parent, XamlTableCell);
+
+        internal static XmlElement AddBlockUIContainerElement(this XmlNode parent) => AddChildElement(parent, XamlBlockUIContainer);
+        internal static XmlElement AddInlineUIContainerElement(this XmlNode parent) => AddChildElement(parent, XamlInlineUIContainer);
 
         internal static XmlElement AddListMarkerStyle(this XmlElement parent, string htmlName)
         {
@@ -167,7 +182,7 @@ namespace Restless.Converters
 
         internal static XmlElement SetNavigateUri(this XmlElement parent, HtmlNode node)
         {
-            if (node.Attributes[HtmlSchema.HtmlHref] is HtmlAttribute attrib && !attrib.Value.StartsWith("#") && attrib.Value.IsValidUri())
+            if (node.Attributes[HtmlSchema.HtmlHref] is HtmlAttribute attrib && attrib.Value.IsValidUri())
             {
                 parent.SetAttribute(XamlNavigateUri, attrib.Value);
             }
@@ -215,15 +230,41 @@ namespace Restless.Converters
 
         internal static void ApplyBlockConfig(this XmlElement element, BlockConfig blockConfig)
         {
-            element.SetAttribute(XamlFontSize, blockConfig.FontSize.ToString());
-            element.SetAttribute(XamlFontWeight, blockConfig.FontWeight.ToString());
+            if (element.AcceptsBlockConfig())
+            {
+                element.SetAttribute(XamlFontSize, blockConfig.FontSize.ToString());
+                element.SetAttribute(XamlFontWeight, blockConfig.FontWeight.ToString());
+
+                if (blockConfig.TextAlignment != TextAlignment.Left)
+                {
+                    element.SetAttribute(XamlTextAlignment, blockConfig.TextAlignment.ToString());
+                }
+
+                if (blockConfig.Foreground is not null)
+                {
+                    element.SetAttribute(XamlForeground, blockConfig.Foreground.ToString());
+                }
+
+                element.ApplyCommonBlockConfig(blockConfig);
+
+                if (element.IsNamed(XamlTable) && !double.IsNaN(blockConfig.Spacing))
+                {
+                    element.SetAttribute(XamlTableCellSpacing, blockConfig.Spacing.ToString());
+                }
+            }
+
+            if (element.IsUIElement())
+            {
+                element.SetAttribute(XamlHorizontalAlignment, blockConfig.HorizontalAlignment.ToString());
+                element.ApplyCommonBlockConfig(blockConfig);
+            }
+        }
+
+        private static void ApplyCommonBlockConfig(this XmlElement element, BlockConfig blockConfig)
+        {
             if (blockConfig.Background is not null)
             {
                 element.SetAttribute(XamlBackground, blockConfig.Background.ToString());
-            }
-            if (blockConfig.Foreground is not null)
-            {
-                element.SetAttribute(XamlForeground, blockConfig.Foreground.ToString());
             }
 
             if (blockConfig.BorderBrush != null)
@@ -240,15 +281,13 @@ namespace Restless.Converters
             {
                 element.SetAttribute(XamlPadding, blockConfig.Padding.ToString());
             }
-
-            if (element.IsNamed(XamlTable) && !double.IsNaN(blockConfig.Spacing))
-            {
-                element.SetAttribute(XamlTableCellSpacing, blockConfig.Spacing.ToString());
-            }
         }
 
         private static XmlDocument GetCreator(this XmlNode node) => node.NodeType == XmlNodeType.Document ? node as XmlDocument : node.OwnerDocument;
         private static bool IsZero(this Thickness t) => t.Bottom == 0 && t.Left == 0 && t.Right == 0 && t.Top == 0;
+        private static bool AcceptsBlockConfig(this XmlNode node) => AcceptsBlockConfigElements.Contains(node.Name);
+        private static bool IsUIElement(this XmlNode node) => UIElements.Contains(node.Name);
+
 
         internal static bool IsNamed(this XmlNode node, string name) => node.Name == name;
 
@@ -260,7 +299,7 @@ namespace Restless.Converters
         internal static bool AcceptsTableCell(this XmlNode node) => AcceptsTableCellElements.Contains(node.Name);
         internal static bool AcceptsList(this XmlNode node) => AcceptsListElements.Contains(node.Name);
         internal static bool AcceptsListItem(this XmlNode node) => AcceptsListItemElements.Contains(node.Name);
-        internal static bool AcceptsImage(this XmlNode node) => AcceptsImageElements.Contains(node.Name);
+        internal static bool AcceptsBlock(this XmlNode node) => AcceptsBlockElements.Contains(node.Name);
         internal static bool AcceptsInline(this XmlNode node) => AcceptsInlineElements.Contains(node.Name);
         internal static bool AcceptsText(this XmlNode node) => AcceptsTextElements.Contains(node.Name);
         #endregion

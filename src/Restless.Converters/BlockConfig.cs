@@ -42,6 +42,14 @@ namespace Restless.Converters
         public TextAlignment TextAlignment { get; set; }
 
         /// <summary>
+        /// Gets or sets the horizontal alignment
+        /// </summary>
+        /// <remarks>
+        /// This property only affects the border that surrounds an image
+        /// </remarks>
+        public HorizontalAlignment HorizontalAlignment { get; set; }
+
+        /// <summary>
         /// Gets or sets the background brush
         /// </summary>
         public Brush Background { get; set; }

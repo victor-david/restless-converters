@@ -409,24 +409,29 @@ namespace Restless.Converters
 
         /************************************************************************/
 
-        #region Private methods (image)
+        #region Private methods (Image)
         private void ProcessImageElement(HtmlNode node, XmlElement parent)
         {
             if (node.GetImageSource() is string imgSource)
             {
                 imgSource = GetCompleteImageSource(imgSource);
 
-                if (parent.AcceptsImage())
+                if (parent.AcceptsInline())
                 {
-                    parent.AddImageElement().SetSource(imgSource);
+                    ProcessImageContainerElement(node, parent.AddInlineUIContainerElement(), imgSource);
                 }
-                else if (parent.AcceptsParagraph())
+                else if (parent.AcceptsBlock())
                 {
-                    XmlElement paragraph = parent.AddParagraphElement();
-                    ApplyBlockConfig(node, paragraph);
-                    paragraph.AddImageElement().SetSource(imgSource);
+                    ProcessImageContainerElement(node, parent.AddBlockUIContainerElement(), imgSource);
                 }
             }
+        }
+
+        private void ProcessImageContainerElement(HtmlNode node, XmlElement container, string imgSource)
+        {
+            XmlElement border = container.AddBorderElement();
+            ApplyBlockConfig(node, border);
+            border.AddImageElement().SetSource(imgSource);
         }
 
         private string GetCompleteImageSource(string imgSource)

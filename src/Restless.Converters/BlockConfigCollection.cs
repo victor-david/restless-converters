@@ -126,7 +126,7 @@ namespace Restless.Converters
 
             Add(new BlockConfig(HtmlSchema.HtmlTable)
             {
-                Spacing = 8,
+                Spacing = 5,
             });
 
             Add(new BlockConfig(HtmlSchema.HtmlTableHeadCell)

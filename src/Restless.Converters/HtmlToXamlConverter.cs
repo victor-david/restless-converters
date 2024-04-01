@@ -219,7 +219,7 @@ namespace Restless.Converters
             {
                 parent.AddChildText(node.GetCleanInnerText());
             }
-            else if (parent.AcceptsParagraph())
+            else if (parent.AcceptsParagraph() && !node.IsEmptyText())
             {
                 parent.AddParagraphElement().AddChildText(node.GetCleanInnerText());
             }

@@ -229,7 +229,11 @@ namespace Restless.Converters
             if (element.AcceptsBlockConfig())
             {
                 element.SetAttribute(XamlFontSize, blockConfig.FontSize.ToString());
-                element.SetAttribute(XamlFontWeight, blockConfig.FontWeight.ToString());
+
+                if (blockConfig.FontWeight != FontWeights.Normal)
+                {
+                    element.SetAttribute(XamlFontWeight, blockConfig.FontWeight.ToString());
+                }
 
                 if (blockConfig.TextAlignment != TextAlignment.Left)
                 {

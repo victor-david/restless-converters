@@ -429,9 +429,8 @@ namespace Restless.Converters
 
         private void ProcessImageContainerElement(HtmlNode node, XmlElement container, string imgSource)
         {
-            XmlElement border = container.AddBorderElement();
-            ApplyBlockConfig(node, border);
-            border.AddImageElement().SetSource(imgSource);
+            XmlElement image = container.AddImageElement().SetSource(imgSource);
+            ApplyBlockConfig(node, image);
         }
 
         private string GetCompleteImageSource(string imgSource)

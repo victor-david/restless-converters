@@ -13,8 +13,6 @@ namespace Restless.Converters
     internal static class XamlSchema
     {
         #region Element Arrays (Private)
-        private static readonly string[] UIElements = { XamlBorder };
-
         private static readonly string[] AcceptsBlockConfigElements = { XamlBlockUIContainer, XamlList, XamlParagraph, XamlSection, XamlTable, XamlTableCell };
 
         private static readonly string[] AcceptsBlockElements = { XamlSection, XamlListItem, XamlTableCell };
@@ -47,7 +45,6 @@ namespace Restless.Converters
         internal const string XamlHyperlink = "Hyperlink";
         internal const string XamlUnderline = "Underline";
 
-        internal const string XamlBorder = "Border";
         internal const string XamlImage = "Image";
         internal const string XamlSource = "Source";
         internal const string XamlStretch = "Stretch";
@@ -105,7 +102,6 @@ namespace Restless.Converters
         internal static XmlElement AddItalicElement(this XmlNode parent) => AddChildElement(parent, XamlItalic);
 
         internal static XmlElement AddHyperlinkElement(this XmlNode parent) => AddChildElement(parent, XamlHyperlink);
-        internal static XmlElement AddBorderElement(this XmlNode parent) => AddChildElement(parent, XamlBorder);
         internal static XmlElement AddImageElement(this XmlNode parent) => AddChildElement(parent, XamlImage);
 
         internal static XmlElement AddListElement(this XmlNode parent) => AddChildElement(parent, XamlList);
@@ -245,7 +241,25 @@ namespace Restless.Converters
                     element.SetAttribute(XamlForeground, blockConfig.Foreground.ToString());
                 }
 
-                element.ApplyCommonBlockConfig(blockConfig);
+                if (blockConfig.Background is not null)
+                {
+                    element.SetAttribute(XamlBackground, blockConfig.Background.ToString());
+                }
+
+                if (blockConfig.BorderBrush != null)
+                {
+                    element.SetAttribute(XamlBorderBrush, blockConfig.BorderBrush.ToString());
+                }
+
+                if (!blockConfig.BorderThickness.IsZero())
+                {
+                    element.SetAttribute(XamlBorderThickness, blockConfig.BorderThickness.ToString());
+                }
+
+                if (!blockConfig.Padding.IsZero())
+                {
+                    element.SetAttribute(XamlPadding, blockConfig.Padding.ToString());
+                }
 
                 if (element.IsNamed(XamlTable) && !double.IsNaN(blockConfig.Spacing))
                 {
@@ -253,41 +267,15 @@ namespace Restless.Converters
                 }
             }
 
-            if (element.IsUIElement())
+            if (element.IsNamed(XamlImage))
             {
                 element.SetAttribute(XamlHorizontalAlignment, blockConfig.HorizontalAlignment.ToString());
-                element.ApplyCommonBlockConfig(blockConfig);
-            }
-        }
-
-        private static void ApplyCommonBlockConfig(this XmlElement element, BlockConfig blockConfig)
-        {
-            if (blockConfig.Background is not null)
-            {
-                element.SetAttribute(XamlBackground, blockConfig.Background.ToString());
-            }
-
-            if (blockConfig.BorderBrush != null)
-            {
-                element.SetAttribute(XamlBorderBrush, blockConfig.BorderBrush.ToString());
-            }
-
-            if (!blockConfig.BorderThickness.IsZero())
-            {
-                element.SetAttribute(XamlBorderThickness, blockConfig.BorderThickness.ToString());
-            }
-
-            if (!blockConfig.Padding.IsZero())
-            {
-                element.SetAttribute(XamlPadding, blockConfig.Padding.ToString());
             }
         }
 
         private static XmlDocument GetCreator(this XmlNode node) => node.NodeType == XmlNodeType.Document ? node as XmlDocument : node.OwnerDocument;
         private static bool IsZero(this Thickness t) => t.Bottom == 0 && t.Left == 0 && t.Right == 0 && t.Top == 0;
         private static bool AcceptsBlockConfig(this XmlNode node) => AcceptsBlockConfigElements.Contains(node.Name);
-        private static bool IsUIElement(this XmlNode node) => UIElements.Contains(node.Name);
-
 
         internal static bool IsNamed(this XmlNode node, string name) => node.Name == name;
 

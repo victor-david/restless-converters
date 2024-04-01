@@ -122,15 +122,10 @@ namespace Restless.Converters.Demo
             {
                 TextBoxXaml.Text = HtmlToXamlConverter.Create(new ConverterOptions()
                 {
-                    IsOutputIndented = true,
                     ProcessUnknown = true
                 }).SetBlockConfig(new BlockConfig("img")
                 {
-                    Background = Brushes.BlanchedAlmond,
-                    Foreground = Brushes.DimGray,
-                    BorderBrush = Brushes.DarkBlue,
-                    BorderThickness = new Thickness(2),
-                    Padding = new Thickness(10),
+                    HorizontalAlignment = HorizontalAlignment.Right
                 }).SetHtml(TextBoxHtml.Text).Convert();
             }
         }

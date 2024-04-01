@@ -45,7 +45,7 @@ namespace Restless.Converters
         /// Gets or sets the horizontal alignment
         /// </summary>
         /// <remarks>
-        /// This property only affects the border that surrounds an image
+        /// This property only affects an image
         /// </remarks>
         public HorizontalAlignment HorizontalAlignment { get; set; }
 

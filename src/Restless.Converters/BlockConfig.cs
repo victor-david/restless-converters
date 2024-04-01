@@ -37,6 +37,19 @@ namespace Restless.Converters
         public FontWeight FontWeight { get; set; }
 
         /// <summary>
+        /// Gets or sets the text alignment
+        /// </summary>
+        public TextAlignment TextAlignment { get; set; }
+
+        /// <summary>
+        /// Gets or sets the horizontal alignment
+        /// </summary>
+        /// <remarks>
+        /// This property only affects an image
+        /// </remarks>
+        public HorizontalAlignment HorizontalAlignment { get; set; }
+
+        /// <summary>
         /// Gets or sets the background brush
         /// </summary>
         public Brush Background { get; set; }
@@ -108,6 +121,7 @@ namespace Restless.Converters
             Id = id;
             FontSize = fontSize;
             FontWeight = fontWeight;
+            TextAlignment = TextAlignment.Left;
             Spacing = double.NaN;
         }
         #endregion

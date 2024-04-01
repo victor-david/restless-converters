@@ -219,7 +219,7 @@ namespace Restless.Converters
             {
                 parent.AddChildText(node.GetCleanInnerText());
             }
-            else if (parent.AcceptsParagraph())
+            else if (parent.AcceptsParagraph() && !node.IsEmptyText())
             {
                 parent.AddParagraphElement().AddChildText(node.GetCleanInnerText());
             }
@@ -409,24 +409,28 @@ namespace Restless.Converters
 
         /************************************************************************/
 
-        #region Private methods (image)
+        #region Private methods (Image)
         private void ProcessImageElement(HtmlNode node, XmlElement parent)
         {
             if (node.GetImageSource() is string imgSource)
             {
                 imgSource = GetCompleteImageSource(imgSource);
 
-                if (parent.AcceptsImage())
+                if (parent.AcceptsInline())
                 {
-                    parent.AddImageElement().SetSource(imgSource);
+                    ProcessImageContainerElement(node, parent.AddInlineUIContainerElement(), imgSource);
                 }
-                else if (parent.AcceptsParagraph())
+                else if (parent.AcceptsBlock())
                 {
-                    XmlElement paragraph = parent.AddParagraphElement();
-                    ApplyBlockConfig(node, paragraph);
-                    paragraph.AddImageElement().SetSource(imgSource);
+                    ProcessImageContainerElement(node, parent.AddBlockUIContainerElement(), imgSource);
                 }
             }
+        }
+
+        private void ProcessImageContainerElement(HtmlNode node, XmlElement container, string imgSource)
+        {
+            XmlElement image = container.AddImageElement().SetSource(imgSource);
+            ApplyBlockConfig(node, image);
         }
 
         private string GetCompleteImageSource(string imgSource)

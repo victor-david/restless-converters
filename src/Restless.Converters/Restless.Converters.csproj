@@ -19,7 +19,7 @@
     <TargetFramework>net7.0-windows</TargetFramework>
     <Title>Restless Converters</Title>
     <UseWPF>true</UseWPF>
-    <Version>1.0.1</Version>
+    <Version>1.0.2</Version>
   </PropertyGroup>
 
   <ItemGroup>

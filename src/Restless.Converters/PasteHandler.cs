@@ -9,6 +9,10 @@ using System.Windows.Media.Imaging;
 
 namespace Restless.Converters
 {
+    /// <summary>
+    /// Provides functionality to intercept paste (and drag/drop) operations
+    /// in order to convert incoming html to xaml and to resize incoming images.
+    /// </summary>
     public class PasteHandler
     {
         #region Properties

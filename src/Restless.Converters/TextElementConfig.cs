@@ -41,9 +41,19 @@ namespace Restless.Converters
         }
 
         /// <summary>
+        /// Helper shortcut property. Returns true if <see cref="FontSize"/> is greater than zero
+        /// </summary>
+        public bool HasFontSize => FontSize > 0;
+
+        /// <summary>
         /// Gets or sets the font weight
         /// </summary>
         public FontWeight FontWeight { get; set; }
+
+        /// <summary>
+        /// Helper shortcut property. Returns true if <see cref="FontWeight"/> is other than Normal.
+        /// </summary>
+        public bool HasFontWeight => FontWeight != FontWeights.Normal;
         #endregion
 
         /************************************************************************/
@@ -58,7 +68,7 @@ namespace Restless.Converters
         }
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="BlockConfig"/> class
+        /// Initializes a new instance of the <see cref="TextElementConfig"/> class
         /// </summary>
         /// <param name="id">The config id</param>
         /// <param name="fontSize">The font size</param>

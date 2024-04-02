@@ -5,9 +5,13 @@
     /// </summary>
     public class ConverterOptions
     {
-        #region Properties
-        public const string SectionBlockId = "section";
+        #region Private
+        private const string SectionBlockId = "section";
+        #endregion
 
+        /************************************************************************/
+
+        #region Properties
         /// <summary>
         /// Gets or sets a value that determines if the top level
         /// element is a Flow Document.

@@ -64,10 +64,23 @@ namespace Restless.Converters
             }
         }
 
+        /// <summary>
+        /// Gets a boolean value that indicates whether the configuration with the specified id exists in the collection.
+        /// </summary>
+        /// <param name="blockId">The id to check.</param>
+        /// <returns>true if a configuration with <paramref name="blockId"/> exists; otherwise, false</returns>
         public bool Contains(string blockId) => Get(blockId) is not null;
 
+        /// <summary>
+        /// Gets the configuration with the specified id.
+        /// </summary>
+        /// <param name="blockId">The id</param>
+        /// <returns>The configuration, or null if it doesn't exist</returns>
         public BlockConfig Get(string blockId) => storage.FirstOrDefault(b => b.Id == blockId);
 
+        /// <summary>
+        /// Clears all configurations from the collection.
+        /// </summary>
         public void Clear()
         {
             storage.Clear();

@@ -126,7 +126,7 @@ namespace Restless.Converters
             {
                 BorderBrush = Brushes.Gray,
                 BorderThickness = new Thickness(1),
-                Padding = new Thickness(5)
+                Padding = new Thickness(6)
             });
 
             Add(new BlockConfig(HtmlSchema.HtmlUnorderedList, 24)

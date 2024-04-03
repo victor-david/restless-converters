@@ -67,7 +67,7 @@
             IsOutputIndented = false;
             AddDefaultBlockConfigs = true;
             ProcessUnknown = false;
-            SectionConfig = new BlockConfig(SectionBlockId, 12.5);
+            SectionConfig = new BlockConfig(SectionBlockId);
         }
         #endregion
     }

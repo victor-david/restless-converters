@@ -15,6 +15,15 @@ namespace Restless.Converters
 
         /************************************************************************/
 
+        #region Constants
+        /// <summary>
+        /// Gets the default font size
+        /// </summary>
+        public const double DefaultFontSize = 12.5;
+        #endregion
+
+        /************************************************************************/
+
         #region Properties
         /// <summary>
         /// Gets the config id
@@ -63,7 +72,7 @@ namespace Restless.Converters
         /// Initializes a new instance of the <see cref="TextElementConfig"/> class
         /// </summary>
         /// <param name="id">The config id</param>
-        public TextElementConfig(string id) : this(id, 12.0)
+        public TextElementConfig(string id) : this(id, DefaultFontSize)
         {
         }
 

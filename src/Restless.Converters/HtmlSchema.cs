@@ -12,7 +12,7 @@ namespace Restless.Converters
         #region Element Arrays (Private)
         private static readonly string[] SectionBlocks = { HtmlMain, HtmlDiv, HtmlSection, HtmlHeader, HtmlFigure, HtmlFigureCaption, HtmlFooter };
         private static readonly string[] ParagraphBlocks = { HtmlHeader1, HtmlHeader2, HtmlHeader3, HtmlHeader4, HtmlHeader5, HtmlHeader6, HtmlParagraph, HtmlPre };
-        private static readonly string[] InlineElements = { HtmlBold, HtmlStrong, HtmlItalic, HtmlEmphasis, HtmlSpan, HtmlAnchor };
+        private static readonly string[] InlineElements = { HtmlAnchor, HtmlBold, HtmlCode, HtmlEmphasis, HtmlItalic, HtmlSpan, HtmlStrong };
         private static readonly string[] ListElements = { HtmlOrderedList, HtmlUnorderedList };
         private static readonly string[] ListItemElements = { HtmlListItem };
         private static readonly string[] TableElements = { HtmlTable };
@@ -45,6 +45,7 @@ namespace Restless.Converters
         internal const string HtmlStrong = "strong";
         internal const string HtmlItalic = "i";
         internal const string HtmlEmphasis = "em";
+        internal const string HtmlCode = "code";
         internal const string HtmlSpan = "span";
         internal const string HtmlAnchor = "a";
 

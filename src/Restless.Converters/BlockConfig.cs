@@ -66,7 +66,7 @@ namespace Restless.Converters
         /// Initializes a new instance of the <see cref="BlockConfig"/> class
         /// </summary>
         /// <param name="id">The block id</param>
-        public BlockConfig(string id) : this(id, 16.0)
+        public BlockConfig(string id) : this(id, DefaultFontSize)
         {
         }
 

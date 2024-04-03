@@ -298,6 +298,7 @@ namespace Restless.Converters
                     XmlElement italic = parent.AddItalicElement();
                     WalkNodes(node, italic);
                     break;
+                case HtmlSchema.HtmlCode:
                 case HtmlSchema.HtmlSpan:
                     XmlElement span = parent.AddSpanElement();
                     WalkNodes(node, span);

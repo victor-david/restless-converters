@@ -122,6 +122,13 @@ namespace Restless.Converters
             Add(new BlockConfig(HtmlSchema.HtmlHeader3, 18, FontWeights.Bold));
             Add(new BlockConfig(HtmlSchema.HtmlHeader4, 14, FontWeights.Bold));
 
+            Add(new BlockConfig(HtmlSchema.HtmlPre)
+            {
+                BorderBrush = Brushes.Gray,
+                BorderThickness = new Thickness(1),
+                Padding = new Thickness(5)
+            });
+
             Add(new BlockConfig(HtmlSchema.HtmlUnorderedList, 24)
             {
                 BorderBrush = Brushes.Green,

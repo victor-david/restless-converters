@@ -6,6 +6,9 @@ using System.Xml;
 
 namespace Restless.Converters
 {
+    /// <summary>
+    /// Provides functionality to convert HTML to XAML for use in a FlowDocument.
+    /// </summary>
     public class HtmlToXamlConverter
     {
         #region Private
@@ -60,7 +63,6 @@ namespace Restless.Converters
         /// <summary>
         /// Initializes a new instance of the <see cref="HtmlToXamlConverter"/> class
         /// </summary>
-        /// <param name="html">The html to convert</param>
         /// <param name="options">Converter options</param>
         private HtmlToXamlConverter(ConverterOptions options)
         {
@@ -296,9 +298,13 @@ namespace Restless.Converters
                     XmlElement italic = parent.AddItalicElement();
                     WalkNodes(node, italic);
                     break;
+                case HtmlSchema.HtmlCode:
                 case HtmlSchema.HtmlSpan:
                     XmlElement span = parent.AddSpanElement();
                     WalkNodes(node, span);
+                    break;
+                case HtmlSchema.HtmlLineBreak:
+                    parent.AddLineBreakElement();
                     break;
                 default:
                     break;

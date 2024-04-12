@@ -19,7 +19,11 @@
     <TargetFramework>net7.0-windows</TargetFramework>
     <Title>Restless Converters</Title>
     <UseWPF>true</UseWPF>
-    <Version>1.0.3</Version>
+    <Version>1.0.4</Version>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
+    <DocumentationFile>Restless.Converters.xml</DocumentationFile>
   </PropertyGroup>
 
   <ItemGroup>

@@ -44,6 +44,7 @@ namespace Restless.Converters
         internal const string XamlItalic = "Italic";
         internal const string XamlHyperlink = "Hyperlink";
         internal const string XamlUnderline = "Underline";
+        internal const string XamlLineBreak = "LineBreak";
 
         internal const string XamlImage = "Image";
         internal const string XamlSource = "Source";
@@ -100,6 +101,7 @@ namespace Restless.Converters
         internal static XmlElement AddRunElement(this XmlNode parent) => AddChildElement(parent, XamlRun);
         internal static XmlElement AddBoldElement(this XmlNode parent) => AddChildElement(parent, XamlBold);
         internal static XmlElement AddItalicElement(this XmlNode parent) => AddChildElement(parent, XamlItalic);
+        internal static XmlElement AddLineBreakElement(this XmlNode parent) => AddChildElement(parent, XamlLineBreak);
 
         internal static XmlElement AddHyperlinkElement(this XmlNode parent) => AddChildElement(parent, XamlHyperlink);
         internal static XmlElement AddImageElement(this XmlNode parent) => AddChildElement(parent, XamlImage);

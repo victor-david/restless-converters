@@ -109,6 +109,15 @@ namespace Restless.Converters
         /************************************************************************/
 
         #region Other extensions
+        /// <summary>
+        /// Gets a boolean value that indicates if the string is a valid uri.
+        /// </summary>
+        /// <param name="uri">The string to check</param>
+        /// <returns>true if <paramref name="uri"/> is valid; otherwise, false.</returns>
+        /// <remarks>
+        /// A uri string checked by this method is considered valid if it is well formed,
+        /// absolute, and points to an http or https resource.
+        /// </remarks>
         public static bool IsValidUri(this string uri)
         {
             if (!Uri.IsWellFormedUriString(uri, UriKind.Absolute))

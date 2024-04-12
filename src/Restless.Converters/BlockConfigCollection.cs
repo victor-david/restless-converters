@@ -64,10 +64,23 @@ namespace Restless.Converters
             }
         }
 
+        /// <summary>
+        /// Gets a boolean value that indicates whether the configuration with the specified id exists in the collection.
+        /// </summary>
+        /// <param name="blockId">The id to check.</param>
+        /// <returns>true if a configuration with <paramref name="blockId"/> exists; otherwise, false</returns>
         public bool Contains(string blockId) => Get(blockId) is not null;
 
+        /// <summary>
+        /// Gets the configuration with the specified id.
+        /// </summary>
+        /// <param name="blockId">The id</param>
+        /// <returns>The configuration, or null if it doesn't exist</returns>
         public BlockConfig Get(string blockId) => storage.FirstOrDefault(b => b.Id == blockId);
 
+        /// <summary>
+        /// Clears all configurations from the collection.
+        /// </summary>
         public void Clear()
         {
             storage.Clear();
@@ -108,6 +121,13 @@ namespace Restless.Converters
 
             Add(new BlockConfig(HtmlSchema.HtmlHeader3, 18, FontWeights.Bold));
             Add(new BlockConfig(HtmlSchema.HtmlHeader4, 14, FontWeights.Bold));
+
+            Add(new BlockConfig(HtmlSchema.HtmlPre)
+            {
+                BorderBrush = Brushes.Gray,
+                BorderThickness = new Thickness(1),
+                Padding = new Thickness(6)
+            });
 
             Add(new BlockConfig(HtmlSchema.HtmlUnorderedList, 24)
             {

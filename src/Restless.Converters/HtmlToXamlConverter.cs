@@ -303,6 +303,9 @@ namespace Restless.Converters
                     XmlElement span = parent.AddSpanElement();
                     WalkNodes(node, span);
                     break;
+                case HtmlSchema.HtmlLineBreak:
+                    parent.AddLineBreakElement();
+                    break;
                 default:
                     break;
             }
